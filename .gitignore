@@ -36,3 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 .env
+app.md
+backend_prompt.md
