@@ -38,3 +38,6 @@ out/
 .env
 app.md
 backend_prompt.md
+
+### SkillBridge ###
+src/main/resources/static/
