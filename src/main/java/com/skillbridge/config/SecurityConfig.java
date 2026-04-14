@@ -36,6 +36,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Static resources (React Frontend)
+                .requestMatchers("/", "/index.html", "/assets/**", "/static/**", "/*.png", "/*.ico", "/*.svg", "/manifest.json").permitAll()
                 // Public auth endpoints
                 .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/graduate/verify-email").permitAll()
@@ -48,6 +50,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/jobs").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/courses").permitAll()
+                // Allow all other non-API GET requests (for React SPA routing)
+                .requestMatchers(HttpMethod.GET, "{^(?!api).*$}").permitAll()
+                // All other UI routes (handled by React Router via index.html)
+                .requestMatchers("/login/**", "/register/**", "/dashboard/**", "/onboarding/**", "/jobs/**", "/graduates/**", "/verify-email/**").permitAll()
                 // Graduate-only endpoints
                 .requestMatchers(HttpMethod.PUT, "/api/graduates/**").hasRole("GRADUATE")
                 .requestMatchers(HttpMethod.POST, "/api/graduates/upload-pdf").hasRole("GRADUATE")

@@ -64,3 +64,32 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+val frontendDir = "$projectDir/skill-bridge-frontend"
+
+val buildFrontend by tasks.registering(Exec::class) {
+    group = "build"
+    description = "Builds the frontend"
+    workingDir = file(frontendDir)
+    commandLine("npm", "run", "build")
+    inputs.dir(file("$frontendDir/src"))
+    inputs.dir(file("$frontendDir/public"))
+    inputs.file(file("$frontendDir/package.json"))
+    outputs.dir(file("$frontendDir/dist"))
+}
+
+val copyFrontendToStatic by tasks.registering(Copy::class) {
+    group = "build"
+    description = "Copies the frontend build to the static resources directory"
+    dependsOn(buildFrontend)
+    from("$frontendDir/dist")
+    into(layout.buildDirectory.dir("resources/main/static"))
+}
+
+tasks.bootRun {
+    dependsOn(copyFrontendToStatic)
+}
+
+tasks.processResources {
+    dependsOn(copyFrontendToStatic)
+}
