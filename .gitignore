@@ -42,3 +42,4 @@ backend_prompt.md
 ### SkillBridge ###
 src/main/resources/static/
 src/main/resources/static/assets
+skill-bridge-frontend/dist
