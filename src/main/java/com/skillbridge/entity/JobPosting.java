@@ -36,6 +36,7 @@ public class JobPosting extends BaseEntity {
     @Column(name = "required_skills", nullable = false, columnDefinition = "text[]")
     private String[] requiredSkills;
 
+    @Builder.Default
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 

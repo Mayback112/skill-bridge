@@ -39,8 +39,12 @@ public class SecurityConfig {
                 // Static resources (React Frontend)
                 .requestMatchers("/", "/index.html", "/assets/**", "/static/**", "/*.png", "/*.ico", "/*.svg", "/manifest.json").permitAll()
                 // Public auth endpoints
-                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/auth/graduate/verify-email").permitAll()
+                .requestMatchers("/api/auth/graduate/verify-email").permitAll()
+                .requestMatchers("/api/auth/graduate/verify").permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/graduate/login").permitAll()
+                .requestMatchers("/api/auth/graduate/register").permitAll()
+                .requestMatchers("/api/auth/admin/login").permitAll()
                 // OAuth2 flow
                 .requestMatchers("/api/auth/employer/google").permitAll()
                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
@@ -50,23 +54,20 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/jobs").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/courses").permitAll()
-                // Allow all other non-API GET requests (for React SPA routing)
-                .requestMatchers(HttpMethod.GET, "{^(?!api).*$}").permitAll()
-                // All other UI routes (handled by React Router via index.html)
-                .requestMatchers("/login/**", "/register/**", "/dashboard/**", "/onboarding/**", "/jobs/**", "/graduates/**", "/verify-email/**").permitAll()
-                // Graduate-only endpoints
-                .requestMatchers(HttpMethod.PUT, "/api/graduates/**").hasRole("GRADUATE")
-                .requestMatchers(HttpMethod.POST, "/api/graduates/upload-pdf").hasRole("GRADUATE")
-                // Employer-only endpoints
+                // Role-based access
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/courses").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/jobs").hasRole("EMPLOYER")
                 .requestMatchers(HttpMethod.PUT, "/api/jobs/**").hasRole("EMPLOYER")
                 .requestMatchers(HttpMethod.DELETE, "/api/jobs/**").hasRole("EMPLOYER")
                 .requestMatchers("/api/employers/**").hasRole("EMPLOYER")
-                // Admin-only endpoints
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/courses").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/graduates/**").hasRole("GRADUATE")
+                .requestMatchers(HttpMethod.POST, "/api/graduates/upload-pdf").hasRole("GRADUATE")
+                // All other API requests must be authenticated
+                .requestMatchers("/api/**").authenticated()
+                // All non-API routes are handled by React (permitAll to allow index.html to load)
+                .anyRequest().permitAll()
             )
             .oauth2Login(oauth2 -> oauth2
                 .successHandler(oAuth2SuccessHandler)

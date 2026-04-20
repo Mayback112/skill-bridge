@@ -43,6 +43,7 @@ public class Graduate extends BaseEntity {
     @Column(name = "linkedin_url")
     private String linkedInUrl;
 
+    @Builder.Default
     @Column(name = "is_verified", nullable = false)
     private boolean isVerified = false;
 

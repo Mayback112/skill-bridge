@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your Email</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 40px;
+            border: 1px solid #e1e1e1;
+            border-radius: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .button {
+            background-color: #2563eb;
+            color: #ffffff !important;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 40px;
+            border-top: 1px solid #eeeeee;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">SKILLBRIDGE GH</div>
+        </div>
+        <div class="content">
+            <h2 th:text="'Hello ' + ${name} + '!'">Hello Graduate!</h2>
+            <p>Welcome to SKILLBRIDGE GH, the digital skills portal for UPSA graduates. We're excited to have you on board!</p>
+            <p>To finalize your registration and start showcasing your skills to employers, please verify your email address by clicking the button below:</p>
+        </div>
+        <div class="button-container">
+            <a th:href="${verificationLink}" class="button">Verify My Account</a>
+        </div>
+        <div class="content">
+            <p>If the button above doesn't work, you can also copy and paste the following link into your browser:</p>
+            <p th:text="${verificationLink}" style="word-break: break-all; color: #2563eb; font-size: 14px;">http://link</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 SKILLBRIDGE GH. All rights reserved.</p>
+            <p>University of Professional Studies, Accra (UPSA).</p>
+        </div>
+    </div>
+</body>
+</html>

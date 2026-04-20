@@ -15,7 +15,17 @@ import java.util.UUID;
 public class AuthResponse {
 
     private String token;
-    private UUID userId;
-    private String email;
-    private Role role;
+    private UserResponse user;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserResponse {
+        private UUID id;
+        private String email;
+        private Role role;
+        private String fullName;
+        private boolean isProfileComplete;
+    }
 }

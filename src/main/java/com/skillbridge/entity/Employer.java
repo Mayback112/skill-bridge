@@ -34,6 +34,7 @@ public class Employer extends BaseEntity {
     @Column(name = "profile_picture")
     private String profilePicture;
 
+    @Builder.Default
     @Column(name = "is_verified", nullable = false)
     private boolean isVerified = true;
 

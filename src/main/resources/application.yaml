@@ -24,9 +24,9 @@ spring:
 
   mail:
     host: ${MAIL_HOST:localhost}
-    port: ${MAIL_PORT:1025}
-    username: ${MAIL_USERNAME:null}
-    password: ${MAIL_PASSWORD:null}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -49,7 +49,7 @@ jwt:
 
 app:
   base-url: ${APP_BASE_URL:http://localhost:8080}
-  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  frontend-url: ${FRONTEND_URL:http://localhost:8080}
   admin:
-    default-email: ${ADMIN_EMAIL:admin@skillbridge.gh}
+    default-email: ${ADMIN_EMAIL:admin@upsa.edu.gh}
     default-password: ${ADMIN_PASSWORD:Admin@123!}

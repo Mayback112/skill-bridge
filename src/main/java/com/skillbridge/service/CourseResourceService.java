@@ -27,6 +27,15 @@ public class CourseResourceService {
         return resources.stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    public List<CourseResourceResponse> getRecommendedCourses(List<String> skills) {
+        if (skills == null || skills.isEmpty()) {
+            return List.of();
+        }
+        return courseResourceRepository.findBySkillTagInIgnoreCase(skills).stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
+    }
+
     @Transactional
     public CourseResourceResponse addCourse(CourseResourceRequest request, UUID adminId) {
         CourseResource resource = CourseResource.builder()

@@ -62,9 +62,13 @@ public class AdminService {
         String token = jwtService.issueToken(admin.getId(), admin.getEmail(), Role.ADMIN);
         return AuthResponse.builder()
             .token(token)
-            .userId(admin.getId())
-            .email(admin.getEmail())
-            .role(Role.ADMIN)
+            .user(AuthResponse.UserResponse.builder()
+                .id(admin.getId())
+                .email(admin.getEmail())
+                .fullName("Administrator")
+                .role(Role.ADMIN)
+                .isProfileComplete(true)
+                .build())
             .build();
     }
 

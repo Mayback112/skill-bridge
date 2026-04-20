@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface CourseResourceRepository extends JpaRepository<CourseResource, UUID> {
 
     List<CourseResource> findBySkillTagIgnoreCase(String skillTag);
+    List<CourseResource> findBySkillTagInIgnoreCase(List<String> skillTags);
 }

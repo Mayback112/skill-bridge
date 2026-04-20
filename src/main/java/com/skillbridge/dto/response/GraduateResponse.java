@@ -1,5 +1,6 @@
 package com.skillbridge.dto.response;
 
+import com.skillbridge.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,10 +24,14 @@ public class GraduateResponse {
     private String bio;
     private String linkedInUrl;
     private boolean isVerified;
+    private boolean isProfileComplete;
+    @Builder.Default
+    private Role role = Role.GRADUATE;
     private List<SkillResponse> skills;
     private List<String> jobsCanDo;
     private List<EducationResponse> educations;
     private List<WorkExperienceResponse> workExperiences;
     private List<CertificationResponse> certifications;
+    private List<CourseResourceResponse> recommendedCourses;
     private LocalDateTime createdAt;
 }

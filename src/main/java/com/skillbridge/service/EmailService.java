@@ -1,16 +1,23 @@
 package com.skillbridge.service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final SpringTemplateEngine templateEngine;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -18,23 +25,27 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromAddress;
 
-    public void sendVerificationEmail(String toEmail, String token) {
+    public void sendVerificationEmail(String toEmail, String fullName, String token) {
         String verificationLink = baseUrl + "/api/auth/graduate/verify-email?token=" + token;
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromAddress);
-        message.setTo(toEmail);
-        message.setSubject("Verify your SKILLBRIDGE GH account");
-        message.setText(
-            "Hello,\n\n" +
-            "Thank you for registering with SKILLBRIDGE GH.\n\n" +
-            "Please click the link below to verify your email address:\n\n" +
-            verificationLink + "\n\n" +
-            "This link expires in 24 hours.\n\n" +
-            "If you did not register, please ignore this email.\n\n" +
-            "SKILLBRIDGE GH Team"
-        );
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        mailSender.send(message);
+            Context context = new Context();
+            context.setVariable("name", fullName);
+            context.setVariable("verificationLink", verificationLink);
+
+            String htmlContent = templateEngine.process("email-verification", context);
+
+            helper.setFrom(fromAddress);
+            helper.setTo(toEmail);
+            helper.setSubject("Verify your SKILLBRIDGE GH account");
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            log.error("Failed to send verification email to {}", toEmail, e);
+        }
     }
 }

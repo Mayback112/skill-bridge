@@ -30,6 +30,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     // PostgreSQL
     runtimeOnly("org.postgresql:postgresql")
@@ -67,11 +69,33 @@ tasks.withType<Test> {
 
 val frontendDir = "$projectDir/skill-bridge-frontend"
 
+val cleanFrontend by tasks.registering(Delete::class) {
+    group = "build"
+    description = "Cleans frontend build artifacts and node_modules"
+    delete("$frontendDir/dist")
+    delete("$frontendDir/node_modules")
+    delete("src/main/resources/static")
+}
+
+tasks.clean {
+    dependsOn(cleanFrontend)
+}
+
+val installFrontend by tasks.registering(Exec::class) {
+    group = "build"
+    description = "Installs frontend dependencies"
+    workingDir = file(frontendDir)
+    commandLine(if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) "npm.cmd" else "npm", "install")
+    inputs.file(file("$frontendDir/package.json"))
+    outputs.dir(file("$frontendDir/node_modules"))
+}
+
 val buildFrontend by tasks.registering(Exec::class) {
     group = "build"
     description = "Builds the frontend"
+    dependsOn(installFrontend)
     workingDir = file(frontendDir)
-    commandLine("npm", "run", "build")
+    commandLine(if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) "npm.cmd" else "npm", "run", "build")
     inputs.dir(file("$frontendDir/src"))
     inputs.dir(file("$frontendDir/public"))
     inputs.file(file("$frontendDir/package.json"))
@@ -82,8 +106,14 @@ val copyFrontendToStatic by tasks.registering(Copy::class) {
     group = "build"
     description = "Copies the frontend build to the static resources directory"
     dependsOn(buildFrontend)
+    
+    // Clean the destination directory before copying
+    doFirst {
+        delete("src/main/resources/static")
+    }
+    
     from("$frontendDir/dist")
-    into(layout.buildDirectory.dir("resources/main/static"))
+    into("src/main/resources/static")
 }
 
 tasks.bootRun {
