@@ -25,28 +25,78 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-20 px-6 max-w-7xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-              Connect Skills With <br />
-              <span className="text-blue-600">Opportunity</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-              The premier digital skills portal connecting UPSA graduates with forward-thinking employers.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/auth/graduate/register">
-                <Button size="lg" className="rounded-2xl w-full sm:w-auto">I'm a Graduate</Button>
-              </Link>
-              <Link to="/auth/employer/login">
-                <Button variant="secondary" size="lg" className="rounded-2xl w-full sm:w-auto">I'm an Employer</Button>
-              </Link>
-            </div>
-          </motion.div>
+        <section className="py-12 md:py-24 px-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-left"
+            >
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1]">
+                Connect Skills With <br />
+                <span className="text-blue-600">Opportunity</span>
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed">
+                The premier digital skills portal connecting UPSA graduates with forward-thinking employers. Bridge the gap between education and your dream career.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <Link to="/auth/graduate/register" className="w-full sm:w-auto">
+                  <Button size="lg" className="rounded-2xl w-full px-8 h-12 text-base">I'm a Graduate</Button>
+                </Link>
+                <Link to="/auth/employer/login" className="w-full sm:w-auto">
+                  <Button variant="outline" size="lg" className="rounded-2xl w-full px-8 h-12 text-base border-2">I'm an Employer</Button>
+                </Link>
+              </div>
+              
+              <div className="mt-12 flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-background bg-muted flex items-center justify-center overflow-hidden">
+                      <img 
+                        src={`https://i.pravatar.cc/150?u=${i + 10}`} 
+                        alt="User" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p>Join <span className="font-bold text-foreground">500+</span> graduates already hired</p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="absolute -inset-4 bg-blue-600/10 rounded-[2rem] blur-2xl -z-10 animate-pulse" />
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-background">
+                <img 
+                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop" 
+                  alt="Students collaborating" 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                      <Briefcase className="text-white h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium text-sm">New Job Posted</p>
+                      <p className="text-white/70 text-xs">Software Developer • Accra</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Decorative elements */}
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-blue-600/10 rounded-full blur-xl" />
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-600/5 rounded-full blur-xl" />
+            </motion.div>
+          </div>
         </section>
 
         {/* How it works */}

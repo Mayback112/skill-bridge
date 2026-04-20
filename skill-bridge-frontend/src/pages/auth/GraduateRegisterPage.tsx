@@ -20,6 +20,8 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+import { authService } from '@/api';
+
 export default function GraduateRegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -31,13 +33,19 @@ export default function GraduateRegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     setIsLoading(true);
     try {
-      console.log('Registering:', data);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success('Check your UPSA email to verify your account');
-      navigate('/auth/graduate/login');
-    } catch (error) {
-      toast.error('Registration failed. Please try again.');
+      const response = await authService.graduateRegister({
+        fullName: data.fullName,
+        email: data.email,
+        password: data.password
+      });
+
+      if (response.data.success) {
+        toast.success('Registration successful! Please check your UPSA email to verify your account.');
+        navigate('/auth/graduate/login');
+      }
+    } catch (error: any) {
+      console.error('Registration Error:', error);
+      toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

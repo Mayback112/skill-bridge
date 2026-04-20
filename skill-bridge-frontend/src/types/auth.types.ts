@@ -7,6 +7,9 @@ export interface User {
   fullName: string;
   role: UserRole;
   isProfileComplete?: boolean;
+  headline?: string;
+  skills?: any[];
+  [key: string]: any; // Allow for extra properties from full profiles
 }
 
 export interface AuthState {
@@ -14,4 +17,25 @@ export interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   role: UserRole | null;
+}
+
+export interface GraduateLoginRequest {
+  email: string;
+  password?: string;
+}
+
+export interface GraduateRegisterRequest {
+  fullName: string;
+  email: string;
+  password?: string;
+}
+
+export interface AdminLoginRequest {
+  email: string;
+  password?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
 }

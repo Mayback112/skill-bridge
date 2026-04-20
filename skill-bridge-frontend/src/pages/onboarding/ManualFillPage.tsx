@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GraduationCap, Camera, Plus, X, Briefcase, Award, Star, User, FileText, Wrench } from 'lucide-react';
 import { Button } from '@/components/common/Button';
@@ -6,40 +6,60 @@ import { Input } from '@/components/common/Input';
 import { Badge } from '@/components/common/Badge';
 import { Avatar } from '@/components/common/Avatar';
 import { toast } from 'react-hot-toast';
+import { graduateService } from '@/api';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function ManualFillPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isPrefilled = location.state?.prefilled;
-
-  const [skills, setSkills] = useState<string[]>(isPrefilled ? ['React', 'TypeScript', 'Node.js'] : []);
-  const [newSkill, setNewSkill] = useState('');
+  const { user, setUser } = useAuth();
   
-  const [jobs, setJobs] = useState<string[]>(isPrefilled ? ['Frontend Developer', 'UI Designer'] : []);
+  const parsedData = location.state?.parsedData;
+  const linkedinUrlFromState = location.state?.linkedinUrl;
+
+  const [fullName, setFullName] = useState(parsedData?.fullName || user?.fullName || '');
+  const [headline, setHeadline] = useState(parsedData?.headline || '');
+  const [bio, setBio] = useState(parsedData?.bio || '');
+  const [linkedinUrl, setLinkedinUrl] = useState(linkedinUrlFromState || '');
+  
+  const [skills, setSkills] = useState<any[]>(parsedData?.skills?.map((s: any) => ({ 
+    skillName: s.skillName, 
+    proficiencyLevel: 'INTERMEDIATE' 
+  })) || []);
+  
+  const [jobs, setJobs] = useState<any[]>(parsedData?.workExperiences?.map((w: any) => ({ 
+    jobTitle: w.jobTitle 
+  })) || []);
+
+  const [educations, setEducations] = useState<any[]>(parsedData?.educations || []);
+  const [workExperiences, setWorkExperiences] = useState<any[]>(parsedData?.workExperiences || []);
+  const [certifications, setCertifications] = useState<any[]>(parsedData?.certifications || []);
+
+  const [newSkill, setNewSkill] = useState('');
   const [newJob, setNewJob] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
 
   const addSkill = () => {
-    if (newSkill && !skills.includes(newSkill)) {
-      setSkills([...skills, newSkill]);
+    if (newSkill && !skills.some(s => s.skillName === newSkill)) {
+      setSkills([...skills, { skillName: newSkill, proficiencyLevel: 'INTERMEDIATE' }]);
       setNewSkill('');
     }
   };
 
-  const removeSkill = (skill: string) => {
-    setSkills(skills.filter(s => s !== skill));
+  const removeSkill = (skillName: string) => {
+    setSkills(skills.filter(s => s.skillName !== skillName));
   };
 
   const addJob = () => {
-    if (newJob && !jobs.includes(newJob)) {
-      setJobs([...jobs, newJob]);
+    if (newJob && !jobs.some(j => j.jobTitle === newJob)) {
+      setJobs([...jobs, { jobTitle: newJob }]);
       setNewJob('');
     }
   };
 
-  const removeJob = (job: string) => {
-    setJobs(jobs.filter(j => j !== job));
+  const removeJob = (jobTitle: string) => {
+    setJobs(jobs.filter(j => j.jobTitle !== jobTitle));
   };
 
   const handleSubmit = async () => {
@@ -48,13 +68,35 @@ export default function ManualFillPage() {
       return;
     }
 
+    if (!user?.id) {
+      toast.error('User not authenticated');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success('Profile saved!');
-      navigate('/dashboard/graduate');
-    } catch (error) {
-      toast.error('Failed to save profile');
+      const payload = {
+        fullName,
+        headline,
+        bio,
+        linkedinUrl,
+        skills,
+        jobsCanDo: jobs,
+        educations,
+        workExperiences,
+        certifications
+      };
+
+      const response = await graduateService.updateProfile(user.id, payload);
+      
+      if (response.data.success) {
+        setUser(response.data.data);
+        toast.success('Profile saved successfully!');
+        navigate('/dashboard/graduate');
+      }
+    } catch (error: any) {
+      console.error('Save Profile Error:', error);
+      toast.error(error.response?.data?.message || 'Failed to save profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -93,14 +135,31 @@ export default function ManualFillPage() {
               <User className="h-6 w-6 text-blue-600" /> Basic Info
             </h2>
             <div className="space-y-6">
-              <Input label="Full Name" placeholder="John Doe" defaultValue={isPrefilled ? 'John Doe' : ''} />
-              <Input label="Headline" placeholder="Professional title" defaultValue={isPrefilled ? 'Frontend Engineer' : ''} />
+              <Input 
+                label="Full Name" 
+                placeholder="John Doe" 
+                value={fullName} 
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              <Input 
+                label="Headline" 
+                placeholder="Professional title" 
+                value={headline} 
+                onChange={(e) => setHeadline(e.target.value)}
+              />
+              <Input 
+                label="LinkedIn URL" 
+                placeholder="https://linkedin.com/in/yourname" 
+                value={linkedinUrl} 
+                onChange={(e) => setLinkedinUrl(e.target.value)}
+              />
               <div className="space-y-1.5">
                 <label className="text-sm font-medium">Bio / About</label>
                 <textarea 
                   className="w-full rounded-2xl border border-input bg-background px-4 py-3 min-h-[150px] focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder="Tell us about yourself"
-                  defaultValue={isPrefilled ? 'I am a passionate developer from UPSA.' : ''}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
                 />
               </div>
             </div>
@@ -123,9 +182,9 @@ export default function ManualFillPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               {skills.map(skill => (
-                <Badge key={skill} variant="blue" className="px-4 py-2 text-sm flex items-center gap-2 rounded-2xl">
-                  {skill}
-                  <X className="h-4 w-4 cursor-pointer hover:text-red-500" onClick={() => removeSkill(skill)} />
+                <Badge key={skill.skillName} variant="blue" className="px-4 py-2 text-sm flex items-center gap-2 rounded-2xl">
+                  {skill.skillName}
+                  <X className="h-4 w-4 cursor-pointer hover:text-red-500" onClick={() => removeSkill(skill.skillName)} />
                 </Badge>
               ))}
               {skills.length === 0 && <p className="text-sm text-muted-foreground italic">No skills added yet.</p>}
@@ -149,9 +208,9 @@ export default function ManualFillPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               {jobs.map(job => (
-                <Badge key={job} variant="outline" className="px-4 py-2 text-sm flex items-center gap-2 rounded-2xl">
-                  {job}
-                  <X className="h-4 w-4 cursor-pointer hover:text-red-500" onClick={() => removeJob(job)} />
+                <Badge key={job.jobTitle} variant="outline" className="px-4 py-2 text-sm flex items-center gap-2 rounded-2xl">
+                  {job.jobTitle}
+                  <X className="h-4 w-4 cursor-pointer hover:text-red-500" onClick={() => removeJob(job.jobTitle)} />
                 </Badge>
               ))}
               {jobs.length === 0 && <p className="text-sm text-muted-foreground italic">No job roles added yet.</p>}
@@ -168,9 +227,11 @@ export default function ManualFillPage() {
           <div className="bg-background p-8 rounded-[2.5rem] border shadow-xl">
             <h3 className="text-sm font-bold text-blue-600 uppercase tracking-widest mb-6">Live Preview</h3>
             <div className="flex flex-col items-center text-center">
-              <Avatar fallback="J" size="xl" className="mb-6" />
-              <h4 className="text-2xl font-bold mb-1">John Doe</h4>
-              <p className="text-blue-600 font-medium mb-4">Frontend Engineer</p>
+              <div className="h-24 w-24 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-6">
+                {fullName?.charAt(0) || user?.fullName?.charAt(0) || '?'}
+              </div>
+              <h4 className="text-2xl font-bold mb-1">{fullName || 'Your Name'}</h4>
+              <p className="text-blue-600 font-medium mb-4">{headline || 'Professional Title'}</p>
               
               <div className="w-full h-px bg-zinc-100 my-6" />
               
@@ -180,7 +241,7 @@ export default function ManualFillPage() {
                     <Star className="h-3 w-3" /> Top Skills
                   </h5>
                   <div className="flex flex-wrap gap-2">
-                    {skills.slice(0, 3).map(s => <Badge key={s} variant="blue" className="rounded-lg">{s}</Badge>)}
+                    {skills.slice(0, 3).map(s => <Badge key={s.skillName} variant="blue" className="rounded-lg">{s.skillName}</Badge>)}
                     {skills.length === 0 && <span className="text-xs italic text-muted-foreground">None</span>}
                   </div>
                 </div>
@@ -189,7 +250,7 @@ export default function ManualFillPage() {
                     <Briefcase className="h-3 w-3" /> Job Roles
                   </h5>
                   <div className="flex flex-wrap gap-2">
-                    {jobs.slice(0, 2).map(j => <Badge key={j} variant="outline" className="rounded-lg">{j}</Badge>)}
+                    {jobs.slice(0, 2).map(j => <Badge key={j.jobTitle} variant="outline" className="rounded-lg">{j.jobTitle}</Badge>)}
                     {jobs.length === 0 && <span className="text-xs italic text-muted-foreground">None</span>}
                   </div>
                 </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/common/Button';
+import { authService } from '@/api';
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
@@ -9,13 +10,20 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     const verify = async () => {
-      // Simulate API verification
-      await new Promise(resolve => setTimeout(resolve, 2000));
       const token = searchParams.get('token');
-      if (token === 'fail') {
+      if (!token) {
         setStatus('failure');
-      } else {
-        setStatus('success');
+        return;
+      }
+
+      try {
+        const response = await authService.verifyEmail(token);
+        if (response.data.success) {
+          setStatus('success');
+        }
+      } catch (error) {
+        console.error('Verification Error:', error);
+        setStatus('failure');
       }
     };
     verify();

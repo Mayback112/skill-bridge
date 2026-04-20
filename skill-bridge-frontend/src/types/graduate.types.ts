@@ -1,3 +1,5 @@
+import { CourseResource } from "./course.types";
+
 // src/types/graduate.types.ts
 export interface Graduate {
   id: string;
@@ -7,11 +9,14 @@ export interface Graduate {
   headline?: string;
   bio?: string;
   linkedInUrl?: string;
+  isVerified: boolean;
   skills: Skill[];
-  jobsCanDo: JobCanDo[];
-  education: Education[];
-  workExperience: WorkExperience[];
+  jobsCanDo: string[];
+  educations: Education[];
+  workExperiences: WorkExperience[];
   certifications: Certification[];
+  recommendedCourses?: CourseResource[];
+  createdAt: string;
 }
 
 export interface Skill {
@@ -20,23 +25,18 @@ export interface Skill {
   proficiencyLevel: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 }
 
-export interface JobCanDo {
-  id: string;
-  title: string;
-}
-
 export interface Education {
   id: string;
   institution: string;
   degree: string;
-  field: string;
+  fieldOfStudy?: string;
   startDate: string;
   endDate?: string;
 }
 
 export interface WorkExperience {
   id: string;
-  title: string;
+  jobTitle: string;
   company: string;
   startDate: string;
   endDate?: string;
@@ -46,6 +46,6 @@ export interface WorkExperience {
 export interface Certification {
   id: string;
   name: string;
-  organization: string;
-  issueDate: string;
+  issuingOrganization?: string;
+  issueDate?: string;
 }

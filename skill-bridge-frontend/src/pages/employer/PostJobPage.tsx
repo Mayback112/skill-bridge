@@ -5,9 +5,12 @@ import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import { Badge } from '@/components/common/Badge';
 import { toast } from 'react-hot-toast';
+import { jobService } from '@/api';
 
 export default function PostJobPage() {
   const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,20 +23,41 @@ export default function PostJobPage() {
   };
 
   const handlePost = async () => {
+    if (!title || !description) {
+      toast.error('Title and description are required');
+      return;
+    }
     if (skills.length === 0) {
       toast.error('At least one required skill is needed');
       return;
     }
+
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast.success('Job posted successfully!');
-    navigate('/dashboard/employer');
+    try {
+      const payload = {
+        title,
+        description,
+        requiredSkills: skills,
+        isActive: true
+      };
+
+      const response = await jobService.create(payload);
+      if (response.data.success) {
+        toast.success('Job posted successfully!');
+        navigate('/dashboard/employer');
+      }
+    } catch (error: any) {
+      console.error('Post Job Error:', error);
+      toast.error(error.response?.data?.message || 'Failed to post job');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-muted/20 pb-20">
       <nav className="h-16 border-b bg-background px-6 flex items-center justify-between sticky top-0 z-50">
-        <Link to="/dashboard/employer" className="flex items-center gap-2">
+        <Link to="/dashboard/employer" className="flex items-center gap-2 text-muted-foreground hover:text-blue-600 transition-colors">
           <ArrowLeft className="h-5 w-5" />
           <span className="font-bold">Back to Dashboard</span>
         </Link>
@@ -44,13 +68,20 @@ export default function PostJobPage() {
           <h1 className="text-3xl font-bold mb-10">Post a New Job</h1>
           
           <div className="space-y-8">
-            <Input label="Job Title" placeholder="e.g. Frontend React Developer" />
+            <Input 
+              label="Job Title" 
+              placeholder="e.g. Frontend React Developer" 
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
             
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Job Description</label>
               <textarea 
                 className="w-full rounded-2xl border border-input bg-background px-4 py-3 min-h-[200px] focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="Describe the role, responsibilities, and company culture..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
 

@@ -5,6 +5,7 @@ import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { authService, graduateService } from '@/api';
 
 export default function LinkedInUploadPage() {
   const [linkedinUrl, setLinkedinUrl] = useState('');
@@ -28,12 +29,19 @@ export default function LinkedInUploadPage() {
     
     setIsUploading(true);
     try {
-      // Simulate PDF parsing
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      const response = await graduateService.uploadPdf(file);
+      
       toast.success('LinkedIn profile parsed successfully!');
-      navigate('/onboarding/manual', { state: { prefilled: true } });
-    } catch (error) {
-      toast.error('Failed to parse PDF. Please try again.');
+      // Pass the parsed data and the linkedin URL to the manual fill page
+      navigate('/onboarding/manual', { 
+        state: { 
+          parsedData: response.data.data,
+          linkedinUrl: linkedinUrl
+        } 
+      });
+    } catch (error: any) {
+      console.error('PDF Parse Error:', error);
+      toast.error(error.response?.data?.message || 'Failed to parse PDF. Please try again.');
     } finally {
       setIsUploading(false);
     }

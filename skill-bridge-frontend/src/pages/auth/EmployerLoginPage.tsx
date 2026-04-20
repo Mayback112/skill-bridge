@@ -5,32 +5,16 @@ import { Button } from '@/components/common/Button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 
+import { authService } from '@/api';
+
 export default function EmployerLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     setIsLoading(true);
-    try {
-      // Simulate Google OAuth Delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const mockEmployer = {
-        id: 'emp-1',
-        email: 'hiring@company.com',
-        fullName: 'Hiring Manager',
-        role: 'EMPLOYER' as const,
-      };
-      
-      login('mock-jwt-token', mockEmployer);
-      toast.success('Signed in with Google successfully!');
-      navigate('/dashboard/employer');
-    } catch (error) {
-      toast.error('Google sign-in failed');
-    } finally {
-      setIsLoading(false);
-    }
+    authService.googleLogin();
   };
 
   return (

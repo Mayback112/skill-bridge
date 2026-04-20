@@ -1,22 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, GraduationCap, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import { Badge } from '@/components/common/Badge';
 import { Avatar } from '@/components/common/Avatar';
 import { Link } from 'react-router-dom';
-
-const MOCK_GRADUATES = [
-  { id: '1', name: 'Kwame Mensah', headline: 'Full Stack Developer', skills: ['React', 'Java', 'SQL'], image: '' },
-  { id: '2', name: 'Ama Serwaa', headline: 'UI/UX Designer', skills: ['Figma', 'Adobe XD', 'CSS'], image: '' },
-  { id: '3', name: 'Kofi Owusu', headline: 'Data Analyst', skills: ['Python', 'Excel', 'Tableau'], image: '' },
-  { id: '4', name: 'Abena Boateng', headline: 'Digital Marketer', skills: ['SEO', 'Google Ads', 'Content'], image: '' },
-  { id: '5', name: 'Yaw Appiah', headline: 'Cybersecurity Enthusiast', skills: ['Linux', 'Networking', 'Security+'], image: '' },
-  { id: '6', name: 'Esi Addo', headline: 'Software Engineer', skills: ['TypeScript', 'Node.js', 'Docker'], image: '' },
-];
+import { graduateService } from '@/api';
+import { toast } from 'react-hot-toast';
 
 export default function GraduateListPage() {
+  const [graduates, setGraduates] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGraduates = async () => {
+      try {
+        setIsLoading(true);
+        const response = await graduateService.getAll();
+        if (response.data.success) {
+          setGraduates(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching graduates:', error);
+        toast.error('Failed to load graduates');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchGraduates();
+  }, []);
+
+  const filteredGraduates = graduates.filter(grad => 
+    grad.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    grad.skills?.some((s: any) => s.skillName.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <div className="min-h-screen bg-muted/10">
@@ -56,40 +75,49 @@ export default function GraduateListPage() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {MOCK_GRADUATES.map((grad) => (
-            <div key={grad.id} className="bg-background border rounded-[2.5rem] p-8 hover:shadow-xl transition-all group border-2 border-transparent hover:border-blue-600/20">
-              <div className="flex items-center gap-4 mb-6">
-                <Avatar fallback={grad.name} size="lg" className="group-hover:scale-110 transition-transform" />
-                <div>
-                  <h3 className="text-xl font-bold group-hover:text-blue-600 transition-colors">{grad.name}</h3>
-                  <p className="text-sm text-muted-foreground font-medium">{grad.headline}</p>
+          {filteredGraduates.length > 0 ? (
+            filteredGraduates.map((grad) => (
+              <div key={grad.id} className="bg-background border rounded-[2.5rem] p-8 hover:shadow-xl transition-all group border-2 border-transparent hover:border-blue-600/20">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-16 w-16 rounded-[1.25rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-xl font-bold shadow-lg group-hover:scale-110 transition-transform">
+                    {grad.fullName?.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold group-hover:text-blue-600 transition-colors">{grad.fullName}</h3>
+                    <p className="text-sm text-muted-foreground font-medium">{grad.headline || 'UPSA Graduate'}</p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mb-8">
-                {grad.skills.map(skill => (
-                  <Badge key={skill} variant="blue" className="rounded-lg">{skill}</Badge>
-                ))}
-              </div>
+                
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {grad.skills?.slice(0, 4).map((s: any) => (
+                    <Badge key={s.id || s.skillName} variant="blue" className="rounded-lg">{s.skillName}</Badge>
+                  ))}
+                  {grad.skills?.length > 4 && <span className="text-xs text-muted-foreground mt-1">+{grad.skills.length - 4} more</span>}
+                </div>
 
-              <Link to={`/graduates/${grad.id}`}>
-                <Button variant="outline" className="w-full rounded-2xl group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all flex gap-2">
-                  View Profile
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+                <Link to={`/graduates/${grad.id}`}>
+                  <Button variant="outline" className="w-full rounded-2xl group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all flex gap-2">
+                    View Profile
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full py-20 text-center">
+              <p className="text-xl text-muted-foreground italic">
+                {isLoading ? 'Loading graduates...' : 'No graduates found matching your search.'}
+              </p>
             </div>
-          ))}
+          )}
         </div>
 
-        {/* Pagination */}
-        <div className="mt-16 flex justify-center gap-2">
-          {[1, 2, 3].map(i => (
-            <button key={i} className={`h-10 w-10 rounded-xl font-bold border transition-all ${i === 1 ? 'bg-blue-600 text-white border-blue-600' : 'hover:bg-muted'}`}>
-              {i}
-            </button>
-          ))}
-        </div>
+        {/* Pagination placeholder */}
+        {!isLoading && filteredGraduates.length > 0 && (
+          <div className="mt-16 flex justify-center gap-2">
+            <button className="h-10 w-10 rounded-xl font-bold border transition-all bg-blue-600 text-white border-blue-600">1</button>
+          </div>
+        )}
       </main>
     </div>
   );

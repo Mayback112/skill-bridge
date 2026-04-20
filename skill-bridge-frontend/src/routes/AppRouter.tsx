@@ -9,9 +9,10 @@ const GraduateProfilePage = React.lazy(() => import('../pages/public/GraduatePro
 const JobListPage = React.lazy(() => import('../pages/public/JobListPage'));
 
 const GraduateRegisterPage = React.lazy(() => import('../pages/auth/GraduateRegisterPage'));
-const GraduateLoginPage = React.lazy(() => import('../pages/auth/GraduateLoginPage'));
+const LoginPage = React.lazy(() => import('../pages/auth/LoginPage'));
 const VerifyEmailPage = React.lazy(() => import('../pages/auth/VerifyEmailPage'));
 const EmployerLoginPage = React.lazy(() => import('../pages/auth/EmployerLoginPage'));
+const OAuth2CallbackPage = React.lazy(() => import('../pages/auth/OAuth2CallbackPage'));
 
 const OnboardingMethodPage = React.lazy(() => import('../pages/onboarding/OnboardingMethodPage'));
 const LinkedInUploadPage = React.lazy(() => import('../pages/onboarding/LinkedInUploadPage'));
@@ -33,9 +34,11 @@ export const AppRouter = () => {
         <Route path="/jobs" element={<JobListPage />} />
 
         <Route path="/auth/graduate/register" element={<GraduateRegisterPage />} />
-        <Route path="/auth/graduate/login" element={<GraduateLoginPage />} />
+        <Route path="/auth/graduate/login" element={<LoginPage />} />
+        <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/graduate/verify-email" element={<VerifyEmailPage />} />
         <Route path="/auth/employer/login" element={<EmployerLoginPage />} />
+        <Route path="/oauth2/callback" element={<OAuth2CallbackPage />} />
         
         {/* Protected Graduate Onboarding */}
         <Route

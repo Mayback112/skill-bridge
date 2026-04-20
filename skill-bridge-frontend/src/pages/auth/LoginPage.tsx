@@ -8,15 +8,16 @@ import { GraduationCap } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import { useAuth } from '@/hooks/useAuth';
+import { authService } from '@/api';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email').endsWith('@upsa.edu.gh', 'Must be a UPSA email (@upsa.edu.gh)'),
+  email: z.string().email('Invalid email'),
   password: z.string().min(1, 'Password is required'),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function GraduateLoginPage() {
+export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -28,28 +29,27 @@ export default function GraduateLoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      console.log('Logging in:', data);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await authService.login(data);
       
-      const mockUser = {
-        id: '1',
-        email: data.email,
-        fullName: 'Test Graduate',
-        role: 'GRADUATE' as const,
-        isProfileComplete: false
-      };
-      
-      login('mock-jwt-token', mockUser);
-      toast.success('Welcome back!');
-      
-      if (!mockUser.isProfileComplete) {
-        navigate('/onboarding/method');
-      } else {
-        navigate('/dashboard/graduate');
+      if (response.data.success) {
+        const { token, user } = response.data.data;
+        login(token, user);
+        toast.success(`Welcome back, ${user.fullName}!`);
+        
+        // Role-based redirection
+        if (user.role === 'ADMIN') {
+          navigate('/dashboard/admin');
+        } else if (user.role === 'GRADUATE') {
+          if (!user.isProfileComplete) {
+            navigate('/onboarding/method');
+          } else {
+            navigate('/dashboard/graduate');
+          }
+        }
       }
-    } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
+    } catch (error: any) {
+      console.error('Login Error:', error);
+      toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -68,12 +68,13 @@ export default function GraduateLoginPage() {
 
       <main className="flex-1 flex items-center justify-center p-6 bg-muted/20">
         <div className="w-full max-w-md bg-background p-10 rounded-[2.5rem] border shadow-xl">
-          <h1 className="text-3xl font-bold mb-8">Welcome back</h1>
+          <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
+          <p className="text-muted-foreground mb-8">Login to your account to continue</p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
-              label="UPSA Email"
-              placeholder="student@upsa.edu.gh"
+              label="Email"
+              placeholder="Enter your email"
               {...register('email')}
               error={errors.email?.message}
             />
@@ -91,7 +92,7 @@ export default function GraduateLoginPage() {
           </form>
 
           <p className="text-center mt-6 text-sm text-muted-foreground">
-            Don't have an account?{' '}
+            Graduate looking for an account?{' '}
             <Link to="/auth/graduate/register" className="text-blue-600 font-semibold hover:underline">
               Register
             </Link>
