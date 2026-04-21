@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 
 // Attach JWT to every request
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -22,10 +22,17 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/auth/graduate/login';
+    const url = error.config?.url || '';
+    // Skip redirect for all auth-related endpoints
+    const isAuthRequest = url.includes('/auth/login') || 
+                         url.includes('/auth/graduate/login') ||
+                         url.includes('/auth/graduate/register') ||
+                         url.includes('/auth/admin/login') ||
+                         url.includes('/auth/graduate/verify-email');
+
+    if (error.response?.status === 401 && !isAuthRequest) {
+      console.warn('Unauthorized request:', url);
+      // We don't redirect here anymore because AuthContext handles it via getCurrentUser failure
     }
     return Promise.reject(error);
   }

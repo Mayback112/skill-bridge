@@ -17,6 +17,7 @@ export interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   role: UserRole | null;
+  isLoading: boolean;
 }
 
 export interface GraduateLoginRequest {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute, RoleRoute } from './RouteGuards';
+import UserLayout from '../components/common/UserLayout';
 
 // Lazy load pages for better performance
 const LandingPage = React.lazy(() => import('../pages/public/LandingPage'));
@@ -22,16 +23,23 @@ const GraduateDashboardPage = React.lazy(() => import('../pages/graduate/Graduat
 const EmployerDashboardPage = React.lazy(() => import('../pages/employer/EmployerDashboardPage'));
 const PostJobPage = React.lazy(() => import('../pages/employer/PostJobPage'));
 const AdminDashboardPage = React.lazy(() => import('../pages/admin/AdminDashboardPage'));
+const AdminGraduatesPage = React.lazy(() => import('../pages/admin/AdminGraduatesPage'));
+const AdminJobsPage = React.lazy(() => import('../pages/admin/AdminJobsPage'));
+const AdminCoursesPage = React.lazy(() => import('../pages/admin/AdminCoursesPage'));
+const GraduateCoursesPage = React.lazy(() => import('../pages/graduate/GraduateCoursesPage'));
+const GraduateReviewPage = React.lazy(() => import('../pages/public/GraduateReviewPage'));
+const GraduateEditProfilePage = React.lazy(() => import('../pages/graduate/GraduateEditProfilePage'));
 
 export const AppRouter = () => {
   return (
     <React.Suspense fallback={<div className="flex h-screen items-center justify-center font-sans">Loading...</div>}>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/graduates" element={<GraduateListPage />} />
-        <Route path="/graduates/:id" element={<GraduateProfilePage />} />
-        <Route path="/jobs" element={<JobListPage />} />
+        {/* Public Routes with Conditional Layout */}
+        <Route path="/" element={<UserLayout><LandingPage /></UserLayout>} />
+        <Route path="/graduates" element={<UserLayout><GraduateListPage /></UserLayout>} />
+        <Route path="/graduates/:id" element={<UserLayout><GraduateProfilePage /></UserLayout>} />
+        <Route path="/jobs" element={<UserLayout><JobListPage /></UserLayout>} />
+        <Route path="/review/graduate/:id" element={<GraduateReviewPage />} />
 
         <Route path="/auth/graduate/register" element={<GraduateRegisterPage />} />
         <Route path="/auth/graduate/login" element={<LoginPage />} />
@@ -46,7 +54,7 @@ export const AppRouter = () => {
           element={
             <ProtectedRoute>
               <RoleRoute role="GRADUATE">
-                <OnboardingMethodPage />
+                <UserLayout><OnboardingMethodPage /></UserLayout>
               </RoleRoute>
             </ProtectedRoute>
           }
@@ -56,7 +64,7 @@ export const AppRouter = () => {
           element={
             <ProtectedRoute>
               <RoleRoute role="GRADUATE">
-                <LinkedInUploadPage />
+                <UserLayout><LinkedInUploadPage /></UserLayout>
               </RoleRoute>
             </ProtectedRoute>
           }
@@ -66,7 +74,7 @@ export const AppRouter = () => {
           element={
             <ProtectedRoute>
               <RoleRoute role="GRADUATE">
-                <ManualFillPage />
+                <UserLayout><ManualFillPage /></UserLayout>
               </RoleRoute>
             </ProtectedRoute>
           }
@@ -74,11 +82,31 @@ export const AppRouter = () => {
         
         {/* Protected Dashboards */}
         <Route
-          path="/dashboard/graduate"
+          path="/graduate/dashboard"
           element={
             <ProtectedRoute>
               <RoleRoute role="GRADUATE">
-                <GraduateDashboardPage />
+                <UserLayout><GraduateDashboardPage /></UserLayout>
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/graduate/profile/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute role="GRADUATE">
+                <UserLayout><GraduateEditProfilePage /></UserLayout>
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/graduate/courses"
+          element={
+            <ProtectedRoute>
+              <RoleRoute role="GRADUATE">
+                <UserLayout><GraduateCoursesPage /></UserLayout>
               </RoleRoute>
             </ProtectedRoute>
           }
@@ -88,7 +116,7 @@ export const AppRouter = () => {
           element={
             <ProtectedRoute>
               <RoleRoute role="EMPLOYER">
-                <EmployerDashboardPage />
+                <UserLayout><EmployerDashboardPage /></UserLayout>
               </RoleRoute>
             </ProtectedRoute>
           }
@@ -98,17 +126,48 @@ export const AppRouter = () => {
           element={
             <ProtectedRoute>
               <RoleRoute role="EMPLOYER">
-                <PostJobPage />
+                <UserLayout><PostJobPage /></UserLayout>
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute role="ADMIN">
+                <UserLayout><AdminDashboardPage /></UserLayout>
               </RoleRoute>
             </ProtectedRoute>
           }
         />
         <Route
-          path="/dashboard/admin"
+          path="/admin/graduates"
           element={
             <ProtectedRoute>
               <RoleRoute role="ADMIN">
-                <AdminDashboardPage />
+                <UserLayout><AdminGraduatesPage /></UserLayout>
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/jobs"
+          element={
+            <ProtectedRoute>
+              <RoleRoute role="ADMIN">
+                <UserLayout><AdminJobsPage /></UserLayout>
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/courses"
+          element={
+            <ProtectedRoute>
+              <RoleRoute role="ADMIN">
+                <UserLayout><AdminCoursesPage /></UserLayout>
               </RoleRoute>
             </ProtectedRoute>
           }

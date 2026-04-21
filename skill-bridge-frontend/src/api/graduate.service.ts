@@ -7,6 +7,9 @@ export const graduateService = {
   getById: (id: string) => 
     axiosInstance.get(`/graduates/${id}`),
 
+  checkProfileStatus: () =>
+    axiosInstance.get('/graduates/me/profile-status'),
+
   updateProfile: (id: string, data: any) => 
     axiosInstance.put(`/graduates/${id}`, data),
 

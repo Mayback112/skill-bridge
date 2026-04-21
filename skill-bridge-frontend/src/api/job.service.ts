@@ -4,8 +4,14 @@ export const jobService = {
   getAll: () => 
     axiosInstance.get('/jobs'),
 
+  getMyJobs: () =>
+    axiosInstance.get('/jobs/my-jobs'),
+
   getById: (id: string) => 
     axiosInstance.get(`/jobs/${id}`),
+
+  getRecommendations: () =>
+    axiosInstance.get('/jobs/recommendations'),
 
   create: (data: any) => 
     axiosInstance.post('/jobs', data),

@@ -3,13 +3,14 @@ import { cn } from '@/lib/utils';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'outline' | 'success' | 'warning' | 'error' | 'blue';
+  variant?: 'default' | 'outline' | 'success' | 'warning' | 'error' | 'blue' | 'secondary';
   className?: string;
 }
 
 export const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', className }) => {
   const variants = {
     default: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
     outline: 'border border-border text-foreground',
     success: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     warning: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
