@@ -56,25 +56,7 @@ export default function GraduateProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/10 pb-20">
-      <nav className="flex items-center justify-between px-6 h-20 border-b bg-background sticky top-0 z-50">
-        <Link to="/" className="flex items-center gap-2">
-          <GraduationCap className="h-6 w-6 text-blue-600" />
-          <span className="font-bold">SKILLBRIDGE GH</span>
-        </Link>
-        <div className="flex gap-4">
-          <Link to="/graduates">
-            <Button variant="ghost" className="rounded-2xl">Browse Graduates</Button>
-          </Link>
-          {isOwnProfile && (
-            <Link to={`/onboarding/manual`}>
-              <Button variant="outline" className="rounded-2xl border-2">Edit Profile</Button>
-            </Link>
-          )}
-        </div>
-      </nav>
-
-      <div className="max-w-6xl mx-auto px-6 mt-12">
+    <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Profile Header */}
         <header className="bg-background border rounded-[3rem] p-10 md:p-16 relative overflow-hidden shadow-sm">
           <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-10" />
@@ -107,6 +89,11 @@ export default function GraduateProfilePage() {
                     <Linkedin className="h-4 w-4 fill-current" />
                     LinkedIn
                   </Button>
+                )}
+                {isOwnProfile && (
+                  <Link to={`/onboarding/manual`}>
+                    <Button variant="outline" className="rounded-2xl border-2">Edit Profile</Button>
+                  </Link>
                 )}
               </div>
             </div>
@@ -257,6 +244,5 @@ export default function GraduateProfilePage() {
           </div>
         </div>
       </div>
-    </div>
   );
 }

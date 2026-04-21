@@ -13,6 +13,20 @@ export default function ManualFillPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, setUser } = useAuth();
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await graduateService.checkProfileStatus();
+        if (res.data.data && !location.state?.parsedData) {
+          navigate('/graduate/dashboard');
+        }
+      } catch (err) {
+        console.error("Failed to check status", err);
+      }
+    };
+    checkStatus();
+  }, [navigate, location.state]);
   
   const parsedData = location.state?.parsedData;
   const linkedinUrlFromState = location.state?.linkedinUrl;
@@ -27,7 +41,8 @@ export default function ManualFillPage() {
     proficiencyLevel: 'INTERMEDIATE' 
   })) || []);
   
-  const [jobs, setJobs] = useState<any[]>(parsedData?.workExperiences?.map((w: any) => ({ 
+  // Initialize 'Jobs I Can Do' from parsed data (newly added) or fallback to work experiences
+  const [jobs, setJobs] = useState<any[]>(parsedData?.jobCanDos || parsedData?.workExperiences?.map((w: any) => ({ 
     jobTitle: w.jobTitle 
   })) || []);
 
@@ -91,8 +106,8 @@ export default function ManualFillPage() {
       
       if (response.data.success) {
         setUser(response.data.data);
-        toast.success('Profile saved successfully!');
-        navigate('/dashboard/graduate');
+        toast.success('Profile created successfully!');
+        navigate('/graduate/dashboard');
       }
     } catch (error: any) {
       console.error('Save Profile Error:', error);
@@ -104,14 +119,6 @@ export default function ManualFillPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
-      <nav className="p-6 border-b flex justify-between items-center bg-background sticky top-0 z-50">
-        <Link to="/" className="flex items-center gap-2">
-          <GraduationCap className="h-6 w-6 text-blue-600" />
-          <span className="font-bold">SKILLBRIDGE</span>
-        </Link>
-        <span className="text-sm font-medium text-muted-foreground">Step 2 of 2</span>
-      </nav>
-
       <main className="flex-1 flex p-6 md:p-12 gap-12 max-w-7xl mx-auto w-full font-sans">
         {/* Left Column - Form */}
         <div className="flex-1 space-y-12">
@@ -193,6 +200,46 @@ export default function ManualFillPage() {
 
           <section className="bg-background p-10 rounded-[2.5rem] border shadow-sm">
             <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
+              <GraduationCap className="h-6 w-6 text-blue-600" /> Education
+            </h2>
+            <div className="space-y-4">
+              {educations.map((edu, idx) => (
+                <div key={idx} className="p-4 border rounded-2xl flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold">{edu.institution}</h4>
+                    <p className="text-sm text-muted-foreground">{edu.degree}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setEducations(educations.filter((_, i) => i !== idx))}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {educations.length === 0 && <p className="text-sm text-muted-foreground italic">No education added.</p>}
+            </div>
+          </section>
+
+          <section className="bg-background p-10 rounded-[2.5rem] border shadow-sm">
+            <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
+              <Briefcase className="h-6 w-6 text-blue-600" /> Work Experience
+            </h2>
+            <div className="space-y-4">
+              {workExperiences.map((exp, idx) => (
+                <div key={idx} className="p-4 border rounded-2xl flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold">{exp.jobTitle}</h4>
+                    <p className="text-sm text-muted-foreground">{exp.company}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setWorkExperiences(workExperiences.filter((_, i) => i !== idx))}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {workExperiences.length === 0 && <p className="text-sm text-muted-foreground italic">No work experience added.</p>}
+            </div>
+          </section>
+
+          <section className="bg-background p-10 rounded-[2.5rem] border shadow-sm">
+            <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
               <Briefcase className="h-6 w-6 text-blue-600" /> Jobs I Can Do
             </h2>
             <div className="flex gap-3 mb-6">
@@ -252,6 +299,36 @@ export default function ManualFillPage() {
                   <div className="flex flex-wrap gap-2">
                     {jobs.slice(0, 2).map(j => <Badge key={j.jobTitle} variant="outline" className="rounded-lg">{j.jobTitle}</Badge>)}
                     {jobs.length === 0 && <span className="text-xs italic text-muted-foreground">None</span>}
+                  </div>
+                </div>
+
+                <div>
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase mb-3 flex items-center gap-2">
+                    <GraduationCap className="h-3 w-3" /> Education
+                  </h5>
+                  <div className="space-y-2">
+                    {educations.slice(0, 1).map((e, i) => (
+                      <div key={i} className="text-sm">
+                        <p className="font-bold leading-tight">{e.institution}</p>
+                        <p className="text-xs text-muted-foreground">{e.degree}</p>
+                      </div>
+                    ))}
+                    {educations.length === 0 && <span className="text-xs italic text-muted-foreground">None</span>}
+                  </div>
+                </div>
+
+                <div>
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase mb-3 flex items-center gap-2">
+                    <Award className="h-3 w-3" /> Latest Experience
+                  </h5>
+                  <div className="space-y-2">
+                    {workExperiences.slice(0, 1).map((w, i) => (
+                      <div key={i} className="text-sm">
+                        <p className="font-bold leading-tight">{w.jobTitle}</p>
+                        <p className="text-xs text-muted-foreground">{w.company}</p>
+                      </div>
+                    ))}
+                    {workExperiences.length === 0 && <span className="text-xs italic text-muted-foreground">None</span>}
                   </div>
                 </div>
               </div>

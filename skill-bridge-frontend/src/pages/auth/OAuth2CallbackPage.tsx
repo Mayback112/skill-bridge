@@ -31,7 +31,7 @@ export default function OAuth2CallbackPage() {
             } else if (user.role === 'ADMIN') {
               navigate('/dashboard/admin');
             } else {
-              navigate('/dashboard/graduate');
+              navigate('/graduate/dashboard');
             }
           }
         } catch (error) {

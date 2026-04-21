@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/Button';
-import { GraduationCap, LogOut, Layout, Users, PlusCircle, Settings, Trash2, Edit } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { PlusCircle, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/common/Badge';
 import { jobService } from '@/api';
 import { toast } from 'react-hot-toast';
 
 export default function EmployerDashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,11 +20,9 @@ export default function EmployerDashboardPage() {
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
-      const response = await jobService.getAll();
-      // Filter jobs by current employer (simplified for now, usually backend handles this if we had a specific endpoint)
+      const response = await jobService.getMyJobs();
       if (response.data.success) {
-        const myJobs = response.data.data.filter((j: any) => j.employerId === user?.id);
-        setJobs(myJobs);
+        setJobs(response.data.data);
       }
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -47,85 +45,59 @@ export default function EmployerDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col">
-      <nav className="h-16 border-b bg-background px-6 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <GraduationCap className="h-6 w-6 text-blue-600" />
-          <span className="font-bold uppercase tracking-wider">SkillBridge Employer</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-medium mr-2">{user?.fullName}</span>
-          <Button variant="ghost" size="icon" onClick={logout} className="rounded-xl">
-            <LogOut className="h-5 w-5" />
-          </Button>
-        </div>
-      </nav>
+    <div className="w-full max-w-[1600px] mx-auto p-2 md:p-0">
+      <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] text-white mb-8 md:mb-10 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+        <h1 className="text-2xl md:text-4xl font-bold mb-2">Welcome, {user?.fullName}!</h1>
+        <p className="text-blue-100 text-sm md:text-lg opacity-90 font-medium max-w-xl">Ready to find your next top talent from UPSA? Post jobs and manage applicants.</p>
+      </div>
 
-      <div className="flex-1 flex">
-        <aside className="w-64 border-r bg-background hidden md:flex flex-col p-4 gap-2">
-          <Link to="/dashboard/employer" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-600 rounded-2xl font-medium transition-all">
-            <Layout className="h-5 w-5" />
-            <span>Dashboard</span>
-          </Link>
-          <Link to="/graduates" className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-2xl font-medium transition-all">
-            <Users className="h-5 w-5" />
-            <span>Browse Graduates</span>
-          </Link>
-          <Link to="/dashboard/employer/post-job" className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-2xl font-medium transition-all">
-            <PlusCircle className="h-5 w-5" />
-            <span>Post a Job</span>
-          </Link>
-        </aside>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        <h2 className="text-xl md:text-2xl font-bold">My Job Postings</h2>
+        <Button onClick={() => navigate('/dashboard/employer/post-job')} className="rounded-xl md:rounded-2xl flex gap-2 h-10 md:h-12 text-sm md:text-base">
+          <PlusCircle className="h-4 w-4" />
+          Post New Job
+        </Button>
+      </div>
 
-        <main className="flex-1 p-6 md:p-10 max-w-5xl mx-auto w-full">
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-12 rounded-[3rem] text-white mb-10 shadow-xl">
-            <h1 className="text-4xl font-bold mb-2">Welcome, {user?.fullName}!</h1>
-            <p className="text-blue-100 text-lg opacity-90 font-medium">Ready to find your next top talent from UPSA?</p>
-          </div>
-
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">My Job Postings</h2>
-            <Button onClick={() => navigate('/dashboard/employer/post-job')} className="rounded-2xl flex gap-2">
-              <PlusCircle className="h-4 w-4" />
-              Post New Job
-            </Button>
-          </div>
-
-          <div className="grid gap-6">
-            {jobs.length > 0 ? (
-              jobs.map(job => (
-                <div key={job.id} className="bg-background border rounded-[2.5rem] p-8 flex items-center justify-between shadow-sm hover:shadow-md transition-all border-2 border-transparent hover:border-blue-100">
-                  <div>
-                    <h3 className="text-xl font-bold mb-1">{job.title}</h3>
-                    <p className="text-sm text-muted-foreground">Posted on {new Date(job.createdAt).toLocaleDateString()}</p>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {job.requiredSkills?.map((skill: string) => (
-                        <Badge key={skill} variant="blue">{skill}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteJob(job.id)} className="rounded-xl text-muted-foreground hover:text-red-600">
-                      <Trash2 className="h-5 w-5" />
-                    </Button>
-                  </div>
+      <div className="grid gap-4 md:gap-6">
+        {jobs.length > 0 ? (
+          jobs.map(job => (
+            <div key={job.id} className="bg-background border rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm hover:shadow-md transition-all border-2 border-transparent hover:border-blue-100 gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                   <h3 className="text-lg md:text-xl font-bold">{job.title}</h3>
+                   <Badge variant="success" className="text-[9px] h-4">Active</Badge>
                 </div>
-              ))
-            ) : (
-              <div className="text-center py-20 bg-background rounded-[3rem] border border-dashed">
-                <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground text-lg italic">
-                  {isLoading ? 'Loading job postings...' : 'You haven\'t posted any jobs yet.'}
-                </p>
-                {!isLoading && (
-                  <Button onClick={() => navigate('/dashboard/employer/post-job')} variant="ghost" className="mt-2 text-blue-600 font-bold">
-                    Post your first job
-                  </Button>
-                )}
+                <p className="text-xs md:text-sm text-muted-foreground">Posted on {new Date(job.createdAt).toLocaleDateString()}</p>
+                <div className="mt-4 flex flex-wrap gap-1.5 md:gap-2">
+                  {job.requiredSkills?.map((skill: string) => (
+                    <Badge key={skill} variant="blue" className="text-[10px] rounded-md">{skill}</Badge>
+                  ))}
+                </div>
               </div>
+              <div className="flex gap-2 justify-end sm:justify-start pt-4 sm:pt-0 border-t sm:border-none">
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteJob(job.id)} className="rounded-xl text-muted-foreground hover:text-red-600 hover:bg-red-50 h-9 w-9 md:h-10 md:w-10">
+                  <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
+                </Button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-16 md:py-20 bg-background rounded-[2rem] md:rounded-[3rem] border-2 border-dashed border-muted">
+            <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+               <Briefcase className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-base md:text-lg italic px-6">
+              {isLoading ? 'Loading job postings...' : 'You haven\'t posted any jobs yet. Start hiring today!'}
+            </p>
+            {!isLoading && (
+              <Button onClick={() => navigate('/dashboard/employer/post-job')} variant="ghost" className="mt-4 text-blue-600 font-bold hover:bg-blue-50 rounded-xl">
+                Post your first job
+              </Button>
             )}
           </div>
-        </main>
+        )}
       </div>
     </div>
   );

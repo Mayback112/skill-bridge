@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GraduationCap, Upload, FileText, CheckCircle, Info } from 'lucide-react';
 import { Button } from '@/components/common/Button';
@@ -6,12 +6,28 @@ import { Input } from '@/components/common/Input';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { authService, graduateService } from '@/api';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function LinkedInUploadPage() {
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await graduateService.checkProfileStatus();
+        if (res.data.data) {
+          navigate('/graduate/dashboard');
+        }
+      } catch (err) {
+        console.error("Failed to check status", err);
+      }
+    };
+    checkStatus();
+  }, [navigate]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -49,14 +65,6 @@ export default function LinkedInUploadPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <nav className="p-6 border-b flex justify-between items-center bg-background sticky top-0 z-50">
-        <Link to="/" className="flex items-center gap-2">
-          <GraduationCap className="h-6 w-6 text-blue-600" />
-          <span className="font-bold">SKILLBRIDGE</span>
-        </Link>
-        <span className="text-sm font-medium text-muted-foreground">Step 1 of 2</span>
-      </nav>
-
       <main className="flex-1 flex items-center justify-center p-6 bg-muted/20">
         <div className="w-full max-w-xl bg-background p-10 rounded-[2.5rem] border shadow-xl">
           <h1 className="text-3xl font-bold mb-8">Connect your LinkedIn</h1>

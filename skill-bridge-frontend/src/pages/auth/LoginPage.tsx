@@ -33,18 +33,25 @@ export default function LoginPage() {
       
       if (response.data.success) {
         const { token, user } = response.data.data;
+        console.log('Login successful, user role:', user.role);
         login(token, user);
         toast.success(`Welcome back, ${user.fullName}!`);
         
         // Role-based redirection
         if (user.role === 'ADMIN') {
-          navigate('/dashboard/admin');
+          console.log('Redirecting admin to /admin/dashboard');
+          navigate('/admin/dashboard');
         } else if (user.role === 'GRADUATE') {
+          console.log('Redirecting graduate, profile complete:', user.isProfileComplete);
           if (!user.isProfileComplete) {
             navigate('/onboarding/method');
           } else {
-            navigate('/dashboard/graduate');
+            console.log('Redirecting to /graduate/dashboard');
+            navigate('/graduate/dashboard');
           }
+        } else if (user.role === 'EMPLOYER') {
+          console.log('Redirecting employer to /dashboard/employer');
+          navigate('/dashboard/employer');
         }
       }
     } catch (error: any) {

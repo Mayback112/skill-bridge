@@ -1,20 +1,29 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Linkedin, UserPen, GraduationCap, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
+import { graduateService } from '@/api';
 
 export default function OnboardingMethodPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await graduateService.checkProfileStatus();
+        if (res.data.data) {
+          navigate('/graduate/dashboard');        }
+      } catch (err) {
+        console.error("Failed to check status", err);
+      }
+    };
+    checkStatus();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <nav className="p-6 border-b flex justify-between items-center bg-background sticky top-0 z-50">
-        <Link to="/" className="flex items-center gap-2">
-          <GraduationCap className="h-6 w-6 text-blue-600" />
-          <span className="font-bold">SKILLBRIDGE</span>
-        </Link>
-        <span className="text-sm font-medium text-muted-foreground">Step 1 of 2</span>
-      </nav>
-
       <main className="flex-1 flex items-center justify-center p-6 bg-muted/20">
         <div className="w-full max-w-2xl text-center">
           <motion.div
