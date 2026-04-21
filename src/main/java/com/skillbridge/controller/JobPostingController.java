@@ -27,6 +27,20 @@ public class JobPostingController {
         return ResponseEntity.ok(ApiResponse.success("Job postings retrieved", jobs));
     }
 
+    @GetMapping("/my-jobs")
+    public ResponseEntity<ApiResponse<List<JobPostingResponse>>> getMyJobs(Authentication authentication) {
+        UUID employerId = (UUID) authentication.getPrincipal();
+        List<JobPostingResponse> jobs = jobPostingService.getJobsByEmployer(employerId);
+        return ResponseEntity.ok(ApiResponse.success("Your job postings retrieved", jobs));
+    }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<ApiResponse<List<JobPostingResponse>>> getRecommendations(Authentication authentication) {
+        UUID graduateId = (UUID) authentication.getPrincipal();
+        List<JobPostingResponse> recommendations = jobPostingService.getRecommendedJobsForGraduate(graduateId);
+        return ResponseEntity.ok(ApiResponse.success("Recommended jobs retrieved", recommendations));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<JobPostingResponse>> getJobById(@PathVariable UUID id) {
         JobPostingResponse job = jobPostingService.getJobById(id);

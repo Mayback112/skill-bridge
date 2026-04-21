@@ -3,6 +3,8 @@ package com.skillbridge.entity;
 import com.skillbridge.enums.ProficiencyLevel;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -28,6 +30,7 @@ public class Skill extends BaseEntity {
     private String skillName;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "proficiency_level", nullable = false, columnDefinition = "proficiency_level")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "proficiency_level", nullable = false)
     private ProficiencyLevel proficiencyLevel;
 }

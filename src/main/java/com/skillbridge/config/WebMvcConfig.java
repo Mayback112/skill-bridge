@@ -25,7 +25,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         // Otherwise, return index.html to let React Router handle it.
                         if (requestedResource.exists() && requestedResource.isReadable()) {
                             return requestedResource;
-                        } else if (resourcePath.startsWith("api/") || resourcePath.startsWith("oauth2/") || resourcePath.startsWith("login/oauth2/")) {
+                        } else if (resourcePath.startsWith("api/") || resourcePath.startsWith("login/oauth2/")) {
                             return null;
                         } else {
                             return location.createRelative("index.html");

@@ -2,6 +2,7 @@ package com.skillbridge.dto.response;
 
 import com.skillbridge.dto.request.CertificationRequest;
 import com.skillbridge.dto.request.EducationRequest;
+import com.skillbridge.dto.request.JobCanDoRequest;
 import com.skillbridge.dto.request.SkillRequest;
 import com.skillbridge.dto.request.WorkExperienceRequest;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class ParsedProfileDto {
     private String headline;
     private String bio;
     private List<SkillRequest> skills;
+    private List<JobCanDoRequest> jobCanDos;
     private List<WorkExperienceRequest> workExperiences;
     private List<EducationRequest> educations;
     private List<CertificationRequest> certifications;

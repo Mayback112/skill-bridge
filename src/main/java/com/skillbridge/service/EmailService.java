@@ -19,14 +19,14 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
-    @Value("${app.base-url}")
-    private String baseUrl;
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     @Value("${spring.mail.username}")
     private String fromAddress;
 
     public void sendVerificationEmail(String toEmail, String fullName, String token) {
-        String verificationLink = baseUrl + "/api/auth/graduate/verify-email?token=" + token;
+        String verificationLink = frontendUrl + "/auth/graduate/verify-email?token=" + token;
 
         try {
             MimeMessage message = mailSender.createMimeMessage();

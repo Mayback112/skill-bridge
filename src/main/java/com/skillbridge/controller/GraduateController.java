@@ -29,6 +29,13 @@ public class GraduateController {
         return ResponseEntity.ok(ApiResponse.success("Graduates retrieved", graduates));
     }
 
+    @GetMapping("/me/profile-status")
+    public ResponseEntity<ApiResponse<Boolean>> checkProfileStatus(Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
+        boolean isComplete = graduateService.isProfileComplete(userId);
+        return ResponseEntity.ok(ApiResponse.success("Profile status retrieved", isComplete));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<GraduateResponse>> getGraduateById(@PathVariable UUID id) {
         GraduateResponse graduate = graduateService.getGraduateById(id);

@@ -95,6 +95,12 @@ public class GraduateService {
             .build();
     }
 
+    public boolean isProfileComplete(UUID userId) {
+        Graduate graduate = graduateRepository.findById(userId)
+            .orElseThrow(() -> new EntityNotFoundException("Graduate not found"));
+        return graduate.getHeadline() != null && !graduate.getHeadline().isEmpty();
+    }
+
     public List<GraduateCardResponse> getAllGraduates() {
         return graduateRepository.findAll().stream()
             .filter(Graduate::isVerified)

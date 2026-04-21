@@ -23,10 +23,10 @@ spring:
     baseline-on-migrate: true
 
   mail:
-    host: ${MAIL_HOST:localhost}
+    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    username: ${MAIL_USERNAME:57241fd50c71a4}
+    password: ${MAIL_PASSWORD:3069f80be9c9e3}
     properties:
       mail:
         smtp:
@@ -39,9 +39,14 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
-            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
             scope: email, profile
+
+logging:
+  level:
+    com.skillbridge: DEBUG
+    org.springframework.security: DEBUG
 
 jwt:
   secret: ${JWT_SECRET:your-super-secret-jwt-key-at-least-32-characters-long}
