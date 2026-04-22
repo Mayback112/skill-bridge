@@ -11,11 +11,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/api';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email'),
+  email: z.string().email('Invalid email').transform(val => val.toLowerCase()),
   password: z.string().min(1, 'Password is required'),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = z.input<typeof loginSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -82,6 +82,7 @@ export default function LoginPage() {
             <Input
               label="Email"
               placeholder="Enter your email"
+              autoLowercase
               {...register('email')}
               error={errors.email?.message}
             />

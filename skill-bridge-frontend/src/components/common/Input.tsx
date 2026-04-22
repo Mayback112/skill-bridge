@@ -4,10 +4,20 @@ import { cn } from '@/lib/utils';
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  autoLowercase?: boolean;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, ...props }, ref) => {
+  ({ className, label, error, autoLowercase, onChange, ...props }, ref) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (autoLowercase) {
+        e.target.value = e.target.value.toLowerCase();
+      }
+      if (onChange) {
+        onChange(e);
+      }
+    };
+
     return (
       <div className="w-full space-y-1.5">
         {label && (
@@ -22,6 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className
           )}
           ref={ref}
+          onChange={handleChange}
           {...props}
         />
         {error && <p className="text-xs text-red-500">{error}</p>}
