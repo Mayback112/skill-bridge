@@ -90,18 +90,25 @@ export default function GraduateDashboardPage() {
         {/* Profile Summary Card */}
         <div className="bg-background border-2 border-blue-600/10 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 shadow-xl shadow-blue-600/5 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-          <div className="h-24 w-24 md:h-32 md:w-32 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl md:text-4xl font-bold shadow-lg ring-4 ring-blue-600/20">
-            {user?.fullName?.charAt(0)}
-          </div>
+          <Link to={user?.id ? `/graduates/${user.id}` : '#'} className="h-24 w-24 md:h-32 md:w-32 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl md:text-4xl font-bold shadow-lg ring-4 ring-blue-600/20 overflow-hidden hover:scale-105 transition-transform">
+            {user?.profilePicture ? (
+              <img src={user.profilePicture} alt={user.fullName} className="w-full h-full object-cover" />
+            ) : (
+              user?.fullName?.charAt(0)
+            )}
+          </Link>
           <div className="text-center md:text-left relative z-10">
             <h2 className="text-2xl md:text-3xl font-black mb-1 md:mb-2 tracking-tight">{user?.fullName}</h2>
             <p className="text-blue-600 font-bold text-lg md:text-xl mb-4">{user?.headline || 'UPSA Graduate • Digital Professional'}</p>
             <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-3">
               <Badge variant="success" className="px-3 md:px-4 py-1 rounded-lg md:rounded-xl border-2 border-green-500/20 text-[10px] md:text-xs">Verified Talent</Badge>
               <Badge variant="blue" className="px-3 md:px-4 py-1 rounded-lg md:rounded-xl border-2 border-blue-500/20 text-[10px] md:text-xs">Active Profile</Badge>
+              <Link to={user?.id ? `/graduates/${user.id}` : '#'}>
+                <Badge variant="outline" className="px-3 md:px-4 py-1 rounded-lg md:rounded-xl border-2 border-blue-600/20 text-[10px] md:text-xs text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer">View My Profile</Badge>
+              </Link>
             </div>
           </div>
-          <Link to={user?.id ? `/graduate/profile/${user.id}` : '#'} className="absolute top-4 right-4 md:top-8 md:right-8 text-blue-600 hover:scale-110 transition-transform bg-blue-50 p-2 rounded-xl">
+          <Link to={user?.id ? `/graduate/profile/${user.id}` : '#'} className="absolute top-4 right-4 md:top-8 md:right-8 text-blue-600 hover:scale-110 transition-transform bg-blue-50 p-2 rounded-xl" title="Edit Profile">
             <Settings className="h-5 w-5 md:h-6 md:w-6" />
           </Link>
         </div>

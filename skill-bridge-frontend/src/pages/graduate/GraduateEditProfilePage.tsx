@@ -31,6 +31,7 @@ export default function GraduateEditProfilePage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -104,6 +105,38 @@ export default function GraduateEditProfilePage() {
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
     setPhoneNumber(formatted);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.id) return;
+
+    // Basic validation
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const response = await graduateService.uploadProfilePicture(user.id, file);
+      if (response.data.success) {
+        setProfilePicture(response.data.data);
+        // Update user context with new picture
+        setUser({ ...user, profilePicture: response.data.data });
+        toast.success('Profile picture updated!');
+      }
+    } catch (error) {
+      console.error('Image upload failed', error);
+      toast.error('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -188,8 +221,23 @@ export default function GraduateEditProfilePage() {
                 )}
               </div>
               <div className="flex flex-col gap-2 w-full sm:w-auto">
-                <Button variant="outline" className="rounded-xl md:rounded-2xl h-10">Change Image</Button>
-                <span className="text-[10px] md:text-xs text-muted-foreground text-center">URL implementation pending</span>
+                <input
+                  type="file"
+                  id="profile-pic-upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={isUploading}
+                />
+                <Button 
+                  variant="outline" 
+                  className="rounded-xl md:rounded-2xl h-10"
+                  onClick={() => document.getElementById('profile-pic-upload')?.click()}
+                  isLoading={isUploading}
+                >
+                  Change Image
+                </Button>
+                <span className="text-[10px] md:text-xs text-muted-foreground text-center">JPG, PNG or WEBP (Max 5MB)</span>
               </div>
             </div>
           </section>

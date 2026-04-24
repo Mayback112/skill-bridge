@@ -32,6 +32,7 @@ public class GraduateService {
     private final EmailValidator emailValidator;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
 
     @Transactional
     public void register(GraduateRegisterRequest request) {
@@ -202,6 +203,22 @@ public class GraduateService {
 
     public ParsedProfileDto uploadAndParsePdf(MultipartFile file) {
         return pdfParserService.parseLinkedInPdf(file);
+    }
+
+    @Transactional
+    public String uploadProfilePicture(UUID id, MultipartFile file, UUID requestingUserId) {
+        if (!id.equals(requestingUserId)) {
+            throw new UnauthorizedException("You can only update your own profile picture");
+        }
+
+        Graduate graduate = graduateRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Graduate not found"));
+
+        String imageUrl = cloudinaryService.uploadImage(file, "profile_pictures");
+        graduate.setProfilePicture(imageUrl);
+        graduateRepository.save(graduate);
+
+        return imageUrl;
     }
 
     public Object getUserProfile(UUID userId) {

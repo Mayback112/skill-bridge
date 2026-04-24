@@ -142,9 +142,20 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
                 <Button className="rounded-2xl px-4 md:px-6 bg-blue-600 hover:bg-blue-700 text-sm md:text-base">Login</Button>
               </Link>
             ) : (
-              <Link to={getBackPath()} className="hidden xs:block">
-                <Button className="rounded-2xl px-6">Dashboard</Button>
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link to={getBackPath()}>
+                  <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-600 overflow-hidden hover:scale-105 transition-transform">
+                    {user?.profilePicture ? (
+                      <img src={user.profilePicture} alt={user.fullName} className="w-full h-full object-cover" />
+                    ) : (
+                      user?.fullName?.charAt(0)
+                    )}
+                  </div>
+                </Link>
+                <Link to={getBackPath()} className="hidden xs:block">
+                  <Button className="rounded-2xl px-6">Dashboard</Button>
+                </Link>
+              </div>
             )}
           </div>
         )}

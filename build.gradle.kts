@@ -48,6 +48,9 @@ dependencies {
     // Apache PDFBox
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
 
+    // Cloudinary
+    implementation("com.cloudinary:cloudinary-http5:2.0.0")
+
     // Lombok (must come before MapStruct in annotation processing)
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

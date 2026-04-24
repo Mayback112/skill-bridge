@@ -33,8 +33,12 @@ const NavGraduate: React.FC<NavGraduateProps> = ({ children }) => {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm font-medium hidden sm:inline-block">{user?.fullName}</span>
-          <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-600">
-            {user?.fullName?.charAt(0)}
+          <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-600 overflow-hidden">
+            {user?.profilePicture ? (
+              <img src={user.profilePicture} alt={user.fullName} className="h-full w-full object-cover" />
+            ) : (
+              user?.fullName?.charAt(0)
+            )}
           </div>
           <Button variant="ghost" size="icon" onClick={logout} className="rounded-xl hidden md:flex">
             <LogOut className="h-5 w-5" />

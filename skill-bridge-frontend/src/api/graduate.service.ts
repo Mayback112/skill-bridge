@@ -19,5 +19,13 @@ export const graduateService = {
     return axiosInstance.post('/graduates/upload-pdf', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
+  },
+
+  uploadProfilePicture: (id: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return axiosInstance.post(`/graduates/${id}/profile-picture`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
   }
 };

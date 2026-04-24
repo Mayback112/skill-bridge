@@ -66,8 +66,12 @@ export default function GraduateListPage() {
             filteredGraduates.map((grad) => (
               <div key={grad.id} className="bg-background border rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 hover:shadow-xl transition-all group border-2 border-transparent hover:border-blue-600/20">
                 <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
-                  <div className="h-12 w-12 md:h-16 md:w-16 rounded-[1rem] md:rounded-[1.25rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-lg md:text-xl font-bold shadow-lg group-hover:scale-110 transition-transform">
-                    {grad.fullName?.charAt(0)}
+                  <div className="h-12 w-12 md:h-16 md:w-16 rounded-[1rem] md:rounded-[1.25rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-lg md:text-xl font-bold shadow-lg group-hover:scale-110 transition-transform overflow-hidden">
+                    {grad.profilePicture ? (
+                      <img src={grad.profilePicture} alt={grad.fullName} className="w-full h-full object-cover" />
+                    ) : (
+                      grad.fullName?.charAt(0)
+                    )}
                   </div>
                   <div>
                     <h3 className="text-lg md:text-xl font-bold group-hover:text-blue-600 transition-colors">{grad.fullName}</h3>

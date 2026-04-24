@@ -35,6 +35,7 @@ export default function ManualFillPage() {
   const [headline, setHeadline] = useState(parsedData?.headline || '');
   const [bio, setBio] = useState(parsedData?.bio || '');
   const [linkedinUrl, setLinkedinUrl] = useState(linkedinUrlFromState || '');
+  const [profilePicture, setProfilePicture] = useState(user?.profilePicture || '');
   
   const [skills, setSkills] = useState<any[]>(parsedData?.skills?.map((s: any) => ({ 
     skillName: s.skillName, 
@@ -54,6 +55,7 @@ export default function ManualFillPage() {
   const [newJob, setNewJob] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const addSkill = () => {
     if (newSkill && !skills.some(s => s.skillName === newSkill)) {
@@ -77,6 +79,36 @@ export default function ManualFillPage() {
     setJobs(jobs.filter(j => j.jobTitle !== jobTitle));
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.id) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const response = await graduateService.uploadProfilePicture(user.id, file);
+      if (response.data.success) {
+        setProfilePicture(response.data.data);
+        setUser({ ...user, profilePicture: response.data.data });
+        toast.success('Profile picture uploaded!');
+      }
+    } catch (error) {
+      console.error('Image upload failed', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (skills.length === 0 || jobs.length === 0) {
       toast.error('At least 1 skill and 1 job role are required');
@@ -95,6 +127,7 @@ export default function ManualFillPage() {
         headline,
         bio,
         linkedinUrl,
+        profilePicture,
         skills,
         jobsCanDo: jobs,
         educations,
@@ -102,13 +135,8 @@ export default function ManualFillPage() {
         certifications
       };
 
-      const response = await graduateService.updateProfile(user.id, payload);
-      
-      if (response.data.success) {
-        setUser(response.data.data);
-        toast.success('Profile created successfully!');
-        navigate('/graduate/dashboard');
-      }
+      // Instead of saving, go to review page
+      navigate(`/review/graduate/${user.id}`, { state: { payload } });
     } catch (error: any) {
       console.error('Save Profile Error:', error);
       toast.error(error.response?.data?.message || 'Failed to save profile. Please try again.');
@@ -127,11 +155,30 @@ export default function ManualFillPage() {
               <Camera className="h-6 w-6 text-blue-600" /> Profile Picture
             </h2>
             <div className="flex items-center gap-8">
-              <div className="h-32 w-32 rounded-[2.5rem] bg-muted border-2 border-dashed border-zinc-300 flex items-center justify-center text-muted-foreground">
-                <Camera className="h-10 w-10" />
+              <div className="h-32 w-32 rounded-[2.5rem] bg-muted border-2 border-dashed border-zinc-300 flex items-center justify-center text-muted-foreground overflow-hidden">
+                {profilePicture ? (
+                  <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <Camera className="h-10 w-10" />
+                )}
               </div>
               <div className="flex flex-col gap-2">
-                <Button variant="outline" className="rounded-2xl">Upload Image</Button>
+                <input
+                  type="file"
+                  id="profile-pic-onboarding"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={isUploading}
+                />
+                <Button 
+                  variant="outline" 
+                  className="rounded-2xl"
+                  onClick={() => document.getElementById('profile-pic-onboarding')?.click()}
+                  isLoading={isUploading}
+                >
+                  Upload Image
+                </Button>
                 <span className="text-xs text-muted-foreground text-center">Optional but recommended</span>
               </div>
             </div>
@@ -274,8 +321,12 @@ export default function ManualFillPage() {
           <div className="bg-background p-8 rounded-[2.5rem] border shadow-xl">
             <h3 className="text-sm font-bold text-blue-600 uppercase tracking-widest mb-6">Live Preview</h3>
             <div className="flex flex-col items-center text-center">
-              <div className="h-24 w-24 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-6">
-                {fullName?.charAt(0) || user?.fullName?.charAt(0) || '?'}
+              <div className="h-24 w-24 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-6 overflow-hidden">
+                {profilePicture ? (
+                  <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  fullName?.charAt(0) || user?.fullName?.charAt(0) || '?'
+                )}
               </div>
               <h4 className="text-2xl font-bold mb-1">{fullName || 'Your Name'}</h4>
               <p className="text-blue-600 font-medium mb-4">{headline || 'Professional Title'}</p>

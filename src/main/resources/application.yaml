@@ -58,3 +58,8 @@ app:
   admin:
     default-email: ${ADMIN_EMAIL:admin@upsa.edu.gh}
     default-password: ${ADMIN_PASSWORD:Admin@123!}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:dg7blc70v}
+  api-key: ${CLOUDINARY_API_KEY:561627481928474}
+  api-secret: ${CLOUDINARY_API_SECRET:IYNA7394XBpIMrQMYTF2Ny_ueSU}

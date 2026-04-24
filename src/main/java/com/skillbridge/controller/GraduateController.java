@@ -60,4 +60,15 @@ public class GraduateController {
         ParsedProfileDto parsed = graduateService.uploadAndParsePdf(file);
         return ResponseEntity.ok(ApiResponse.success("PDF parsed successfully. Please review and confirm.", parsed));
     }
+
+    @PostMapping("/{id}/profile-picture")
+    public ResponseEntity<ApiResponse<String>> uploadProfilePicture(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication) {
+
+        UUID requestingUserId = (UUID) authentication.getPrincipal();
+        String imageUrl = graduateService.uploadProfilePicture(id, file, requestingUserId);
+        return ResponseEntity.ok(ApiResponse.success("Profile picture uploaded successfully", imageUrl));
+    }
 }

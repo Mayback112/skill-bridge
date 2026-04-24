@@ -69,7 +69,18 @@ const AdminGraduatesPage: React.FC = () => {
                   {graduates.length > 0 ? (
                     graduates.map(g => (
                       <tr key={g.id} className="border-b hover:bg-muted/50 transition-colors">
-                        <td className="p-4 font-bold text-sm md:text-base">{g.fullName}</td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-muted overflow-hidden flex items-center justify-center shrink-0 border shadow-sm">
+                              {g.profilePicture ? (
+                                <img src={g.profilePicture} alt={g.fullName} className="h-full w-full object-cover" />
+                              ) : (
+                                <span className="text-blue-600 font-bold">{g.fullName?.charAt(0)}</span>
+                              )}
+                            </div>
+                            <span className="font-bold text-sm md:text-base">{g.fullName}</span>
+                          </div>
+                        </td>
                         <td className="p-4 text-xs md:text-sm text-muted-foreground">{g.headline || 'N/A'}</td>
                         <td className="p-4">
                           <div className="flex gap-1.5 flex-wrap">

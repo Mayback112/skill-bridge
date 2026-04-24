@@ -1,19 +1,39 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { GraduationCap, Linkedin, Mail, Briefcase, Award, BookOpen, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { GraduationCap, Linkedin, Mail, Briefcase, Award, BookOpen, ExternalLink, CheckCircle2, Save, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { Badge } from '@/components/common/Badge';
 import { graduateService } from '@/api';
 import { toast } from 'react-hot-toast';
-import { Graduate } from '@/types/graduate.types';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function GraduateReviewPage() {
   const { id } = useParams();
-  const [grad, setGrad] = useState<Graduate | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setUser } = useAuth();
+  
+  const [grad, setGrad] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Payload passed from ManualFillPage
+  const reviewPayload = location.state?.payload;
+  const isReviewMode = !!reviewPayload;
 
   useEffect(() => {
     const fetchProfile = async () => {
+      if (isReviewMode) {
+        // Map payload to match the expected Graduate structure for display
+        setGrad({
+          ...reviewPayload,
+          // Flatten jobs if they are in object format
+          jobsCanDo: reviewPayload.jobsCanDo?.map((j: any) => j.jobTitle) || []
+        });
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         if (!id) return;
@@ -30,7 +50,26 @@ export default function GraduateReviewPage() {
     };
 
     fetchProfile();
-  }, [id]);
+  }, [id, isReviewMode, reviewPayload]);
+
+  const handleConfirmSave = async () => {
+    if (!id || !reviewPayload) return;
+    
+    setIsSaving(true);
+    try {
+      const response = await graduateService.updateProfile(id, reviewPayload);
+      if (response.data.success) {
+        setUser(response.data.data);
+        toast.success('Profile created successfully!');
+        navigate('/graduate/dashboard');
+      }
+    } catch (error: any) {
+      console.error('Final Save Error:', error);
+      toast.error(error.response?.data?.message || 'Failed to save profile. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -53,6 +92,35 @@ export default function GraduateReviewPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans">
+      {/* Onboarding Header */}
+      {isReviewMode && (
+        <div className="bg-blue-600 text-white py-4 px-6 md:px-12 sticky top-0 z-50 shadow-lg">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+              <h2 className="text-lg font-bold">Review Your Profile</h2>
+              <p className="text-blue-100 text-sm">Please check your details before finalizing your account.</p>
+            </div>
+            <div className="flex gap-4 w-full md:w-auto">
+              <Button 
+                variant="outline" 
+                className="bg-transparent border-white text-white hover:bg-white/10 flex-1 md:flex-none border-2"
+                onClick={() => navigate(-1)}
+                disabled={isSaving}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" /> Back to Edit
+              </Button>
+              <Button 
+                className="bg-white text-blue-600 hover:bg-blue-50 flex-1 md:flex-none font-bold"
+                onClick={handleConfirmSave}
+                isLoading={isSaving}
+              >
+                <Save className="h-4 w-4 mr-2" /> Confirm & Save Profile
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
           {/* Profile Header */}
           <header className="bg-card border rounded-[2rem] md:rounded-[3rem] p-6 md:p-16 relative overflow-hidden shadow-sm">
@@ -109,8 +177,8 @@ export default function GraduateReviewPage() {
                   Digital Skills
                 </h2>
                 <div className="flex flex-wrap gap-3 md:gap-4">
-                  {grad.skills?.map((skill) => (
-                    <div key={skill.id} className="flex flex-col items-center bg-muted/30 px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-3xl border hover:border-blue-600/30 transition-colors group">
+                  {grad.skills?.map((skill: any, i: number) => (
+                    <div key={i} className="flex flex-col items-center bg-muted/30 px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-3xl border hover:border-blue-600/30 transition-colors group">
                       <span className="font-bold text-sm md:text-base mb-1 group-hover:text-blue-600 transition-colors">{skill.skillName}</span>
                       <Badge variant="blue" className="text-[9px] md:text-[10px] rounded-lg">{skill.proficiencyLevel}</Badge>
                     </div>
@@ -125,7 +193,7 @@ export default function GraduateReviewPage() {
                   Jobs I Can Do
                 </h2>
                 <div className="flex flex-wrap gap-2 md:gap-3">
-                  {grad.jobsCanDo?.map((job, i) => (
+                  {grad.jobsCanDo?.map((job: string, i: number) => (
                     <Badge key={i} variant="outline" className="px-4 md:px-5 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-sm md:text-base border-2">
                       {job}
                     </Badge>
@@ -141,7 +209,7 @@ export default function GraduateReviewPage() {
                 </h2>
                 <div className="space-y-8 md:space-y-10">
                   {grad.workExperiences?.length > 0 ? (
-                    grad.workExperiences.map((exp, i) => (
+                    grad.workExperiences.map((exp: any, i: number) => (
                       <div key={i} className="flex gap-4 md:gap-6">
                         <div className="h-10 w-10 md:h-12 md:w-12 bg-blue-100 rounded-xl md:rounded-2xl flex items-center justify-center text-blue-600 shrink-0">
                           <Briefcase className="h-5 w-5 md:h-6 md:w-6" />
@@ -172,7 +240,7 @@ export default function GraduateReviewPage() {
                 </h2>
                 <div className="space-y-6">
                   {grad.educations?.length > 0 ? (
-                    grad.educations.map((edu, i) => (
+                    grad.educations.map((edu: any, i: number) => (
                       <div key={i} className="relative pl-6 border-l-2 border-blue-600/20 pb-2 last:pb-0">
                         <div className="absolute left-[-5px] top-0 h-2 w-2 rounded-full bg-blue-600" />
                         <h3 className="font-bold text-sm md:text-base">{edu.institution}</h3>
@@ -194,7 +262,7 @@ export default function GraduateReviewPage() {
                 </h2>
                 <div className="space-y-6">
                   {grad.certifications?.length > 0 ? (
-                    grad.certifications.map((cert, i) => (
+                    grad.certifications.map((cert: any, i: number) => (
                       <div key={i} className="mb-4 last:mb-0">
                         <h3 className="font-bold text-sm">{cert.name}</h3>
                         <p className="text-xs text-muted-foreground mt-1">
