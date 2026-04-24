@@ -124,6 +124,8 @@ public class GraduateService {
             .orElseThrow(() -> new EntityNotFoundException("Graduate not found"));
 
         if (request.getFullName() != null) graduate.setFullName(request.getFullName());
+        if (request.getEmail() != null) graduate.setEmail(request.getEmail());
+        if (request.getPhoneNumber() != null) graduate.setPhoneNumber(request.getPhoneNumber());
         if (request.getProfilePicture() != null) graduate.setProfilePicture(request.getProfilePicture());
         if (request.getHeadline() != null) graduate.setHeadline(request.getHeadline());
         if (request.getBio() != null) graduate.setBio(request.getBio());
@@ -242,6 +244,7 @@ public class GraduateService {
             .id(g.getId())
             .fullName(g.getFullName())
             .email(g.getEmail())
+            .phoneNumber(g.getPhoneNumber())
             .profilePicture(g.getProfilePicture())
             .headline(g.getHeadline())
             .bio(g.getBio())

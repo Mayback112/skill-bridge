@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { GraduationCap } from 'lucide-react';
 import { Button } from '@/components/common/Button';
@@ -20,6 +20,7 @@ type LoginFormValues = z.input<typeof loginSchema>;
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
@@ -33,24 +34,30 @@ export default function LoginPage() {
       
       if (response.data.success) {
         const { token, user } = response.data.data;
-        console.log('Login successful, user role:', user.role);
         login(token, user);
         toast.success(`Welcome back, ${user.fullName}!`);
         
-        // Role-based redirection
+        // Handle redirect query parameter
+        const queryParams = new URLSearchParams(location.search);
+        const redirect = queryParams.get('redirect');
+        const applyJobId = queryParams.get('applyJobId');
+
+        if (redirect) {
+          const target = applyJobId ? `${redirect}?applyJobId=${applyJobId}` : redirect;
+          navigate(target);
+          return;
+        }
+
+        // Default role-based redirection
         if (user.role === 'ADMIN') {
-          console.log('Redirecting admin to /admin/dashboard');
           navigate('/admin/dashboard');
         } else if (user.role === 'GRADUATE') {
-          console.log('Redirecting graduate, profile complete:', user.isProfileComplete);
           if (!user.isProfileComplete) {
             navigate('/onboarding/method');
           } else {
-            console.log('Redirecting to /graduate/dashboard');
             navigate('/graduate/dashboard');
           }
         } else if (user.role === 'EMPLOYER') {
-          console.log('Redirecting employer to /dashboard/employer');
           navigate('/dashboard/employer');
         }
       }

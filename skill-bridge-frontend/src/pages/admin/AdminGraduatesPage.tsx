@@ -74,7 +74,7 @@ const AdminGraduatesPage: React.FC = () => {
                         <td className="p-4">
                           <div className="flex gap-1.5 flex-wrap">
                             {g.skills?.slice(0, 3).map((s: any) => (
-                              <Badge key={s.id} variant="secondary" className="rounded-md text-[9px] md:text-[10px]">
+                              <Badge key={s.id} variant="blue" className="rounded-md text-[9px] md:text-[10px]">
                                 {s.skillName}
                               </Badge>
                             ))}

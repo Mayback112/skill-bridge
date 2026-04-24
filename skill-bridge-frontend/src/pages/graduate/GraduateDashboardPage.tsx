@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/Button';
 import { Badge } from '@/components/common/Badge';
-import { Settings, Star, ExternalLink, BookOpen, Briefcase, Sparkles } from 'lucide-react';
+import { Settings, Star, ExternalLink, BookOpen, Briefcase, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { graduateService, courseService, jobService } from '@/api';
 import { toast } from 'react-hot-toast';
@@ -12,6 +12,7 @@ export default function GraduateDashboardPage() {
   const { user, setUser } = useAuth();
   const [courses, setCourses] = useState<any[]>([]);
   const [recommendedJobs, setRecommendedJobs] = useState<any[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +31,12 @@ export default function GraduateDashboardPage() {
           const jobsRes = await jobService.getRecommendations();
           if (jobsRes.data.success) {
             setRecommendedJobs(jobsRes.data.data);
+          }
+
+          // Fetch applied jobs
+          const appsRes = await jobService.getMyApplications();
+          if (appsRes.data.success) {
+            setAppliedJobs(appsRes.data.data);
           }
 
           // Fetch recommended courses based on skills
@@ -65,9 +72,18 @@ export default function GraduateDashboardPage() {
 
   return (
     <div className="w-full max-w-[1600px] mx-auto">
-      <div className="mb-6 md:mb-10">
-        <h1 className="text-2xl md:text-3xl font-bold">Graduate Dashboard</h1>
-        <p className="text-sm md:text-base text-muted-foreground">Manage your skills and discover opportunities.</p>
+      {/* Hero Image Section */}
+      <div className="relative mb-6 md:mb-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-xl">
+        <img
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
+          alt="Graduates collaborating and building their careers"
+          className="w-full h-48 md:h-64 object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+          <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">Graduate Dashboard</h1>
+          <p className="text-sm md:text-base text-blue-100">Manage your skills and discover opportunities.</p>
+        </div>
       </div>
 
       <div className="grid gap-6">
@@ -91,7 +107,7 @@ export default function GraduateDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8 mt-2 md:mt-4">
-          {/* Left Column - Skills */}
+          {/* Left Column - Skills & Applications */}
           <div className="xl:col-span-1 space-y-6 md:space-y-8">
             <div className="bg-background border-2 border-zinc-100 rounded-[2rem] md:rounded-[3rem] p-6 md:p-8 shadow-lg shadow-zinc-200/50">
               <div className="flex items-center justify-between mb-6 md:mb-8">
@@ -113,6 +129,41 @@ export default function GraduateDashboardPage() {
                     <Link to={user?.id ? `/graduate/profile/${user.id}` : '#'}>
                       <Button variant="outline" size="sm" className="rounded-xl">Update Profile</Button>
                     </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Applied Jobs Section */}
+            <div className="bg-background border-2 border-emerald-600/10 rounded-[2rem] md:rounded-[3rem] p-6 md:p-8 shadow-xl shadow-emerald-600/5">
+              <div className="flex items-center justify-between mb-6 md:mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 md:h-10 md:w-10 bg-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center text-white">
+                    <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5" />
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold">My Applications</h3>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                {appliedJobs.length > 0 ? (
+                  appliedJobs.map((app: any) => (
+                    <div 
+                      key={app.id} 
+                      className="p-4 rounded-[1.5rem] bg-muted/30 border border-transparent hover:border-emerald-100 transition-all"
+                    >
+                      <p className="font-bold text-sm md:text-base mb-1">{app.jobTitle}</p>
+                      <p className="text-[10px] md:text-xs text-muted-foreground font-medium mb-3">{app.companyName}</p>
+                      <Badge variant={app.status === 'ACCEPTED' ? 'success' : app.status === 'REJECTED' ? 'error' : app.status === 'REVIEWED' ? 'blue' : 'secondary'} className="text-[9px] rounded-lg">
+                        {app.status === 'REVIEWED' ? 'SEEN' : app.status}
+                      </Badge>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-6 text-center bg-muted/20 rounded-[1.5rem] border-2 border-dashed border-muted">
+                    <p className="text-muted-foreground italic px-4 text-xs">
+                      You haven't applied for any jobs yet.
+                    </p>
                   </div>
                 )}
               </div>

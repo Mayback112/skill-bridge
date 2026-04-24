@@ -5,6 +5,7 @@ export interface Graduate {
   id: string;
   fullName: string;
   email: string;
+  phoneNumber?: string;
   profilePicture?: string;
   headline?: string;
   bio?: string;

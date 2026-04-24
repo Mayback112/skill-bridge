@@ -117,8 +117,8 @@ const AdminCoursesPage: React.FC = () => {
               onChange={(e) => setFormData({...formData, skillTag: e.target.value})}
             />
           </div>
-          <Button 
-            className="md:col-span-2 rounded-xl h-10 md:h-12 font-bold" 
+          <Button
+            className="md:col-span-2 rounded-xl h-10 md:h-12 font-bold bg-blue-600 hover:bg-blue-700"
             onClick={handleSubmit}
             disabled={isSubmitting}
           >

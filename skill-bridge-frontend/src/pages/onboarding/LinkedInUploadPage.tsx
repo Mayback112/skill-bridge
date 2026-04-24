@@ -102,9 +102,9 @@ export default function LinkedInUploadPage() {
                 </ol>
               </div>
 
-              <div 
+              <div
                 className={`border-2 border-dashed rounded-3xl p-10 text-center transition-all ${
-                  file ? 'border-green-500 bg-green-50/30' : 'border-zinc-200 hover:border-blue-600'
+                  file ? 'border-green-500 bg-green-50/30' : 'border-blue-200 hover:border-blue-600 bg-blue-50/30'
                 }`}
               >
                 <input

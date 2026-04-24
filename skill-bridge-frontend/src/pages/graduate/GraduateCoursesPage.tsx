@@ -64,8 +64,8 @@ const GraduateCoursesPage: React.FC = () => {
             filteredCourses.map((c) => (
               <Card key={c.id} className="rounded-[1.5rem] md:rounded-3xl hover:border-blue-200 transition-all hover:shadow-xl hover:shadow-blue-600/5 flex flex-col group border-2">
                 <CardHeader className="p-6 pb-2">
-                  <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <BookOpen className="h-6 w-6 text-emerald-600" />
+                  <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <BookOpen className="h-6 w-6 text-blue-600" />
                   </div>
                   <CardTitle className="text-base md:text-lg line-clamp-2 min-h-[3.5rem] font-bold">{c.title}</CardTitle>
                 </CardHeader>

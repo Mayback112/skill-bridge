@@ -20,5 +20,17 @@ export const jobService = {
     axiosInstance.put(`/jobs/${id}`, data),
 
   delete: (id: string) => 
-    axiosInstance.delete(`/jobs/${id}`)
+    axiosInstance.delete(`/jobs/${id}`),
+
+  apply: (jobId: string) =>
+    axiosInstance.post(`/job-applications/apply/${jobId}`),
+
+  getApplications: (jobId: string) =>
+    axiosInstance.get(`/job-applications/job/${jobId}`),
+
+  getMyApplications: () =>
+    axiosInstance.get('/job-applications/my-applications'),
+
+  updateApplicationStatus: (applicationId: string, status: string) =>
+    axiosInstance.put(`/job-applications/${applicationId}/status`, { status })
 };

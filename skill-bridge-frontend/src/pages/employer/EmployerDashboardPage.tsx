@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/Button';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Trash2, Users, ChevronRight, Mail, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/common/Badge';
 import { jobService } from '@/api';
 import { toast } from 'react-hot-toast';
+import { Modal } from '@/components/common/Modal';
 
 export default function EmployerDashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [jobs, setJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [applications, setApplications] = useState<any[]>([]);
+  const [isLoadingApps, setIsLoadingApps] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchJobs();
@@ -32,6 +37,23 @@ export default function EmployerDashboardPage() {
     }
   };
 
+  const handleViewApplications = async (job: any) => {
+    setSelectedJob(job);
+    setIsModalOpen(true);
+    setIsLoadingApps(true);
+    try {
+      const response = await jobService.getApplications(job.id);
+      if (response.data.success) {
+        setApplications(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      toast.error('Failed to load applications');
+    } finally {
+      setIsLoadingApps(false);
+    }
+  };
+
   const handleDeleteJob = async (id: string) => {
     if (!confirm('Are you sure you want to delete this job posting?')) return;
     
@@ -46,10 +68,18 @@ export default function EmployerDashboardPage() {
 
   return (
     <div className="w-full max-w-[1600px] mx-auto p-2 md:p-0">
-      <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] text-white mb-8 md:mb-10 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-        <h1 className="text-2xl md:text-4xl font-bold mb-2">Welcome, {user?.fullName}!</h1>
-        <p className="text-blue-100 text-sm md:text-lg opacity-90 font-medium max-w-xl">Ready to find your next top talent from UPSA? Post jobs and manage applicants.</p>
+      {/* Hero Image Section */}
+      <div className="relative mb-8 md:mb-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-xl">
+        <img
+          src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
+          alt="Business professionals collaborating and hiring"
+          className="w-full h-48 md:h-64 object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/80 via-indigo-900/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+          <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">Welcome, {user?.fullName}!</h1>
+          <p className="text-sm md:text-base text-indigo-100">Ready to find your next top talent from UPSA? Post jobs and manage applicants.</p>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
@@ -64,7 +94,7 @@ export default function EmployerDashboardPage() {
         {jobs.length > 0 ? (
           jobs.map(job => (
             <div key={job.id} className="bg-background border rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm hover:shadow-md transition-all border-2 border-transparent hover:border-blue-100 gap-4">
-              <div>
+              <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                    <h3 className="text-lg md:text-xl font-bold">{job.title}</h3>
                    <Badge variant="success" className="text-[9px] h-4">Active</Badge>
@@ -76,8 +106,18 @@ export default function EmployerDashboardPage() {
                   ))}
                 </div>
               </div>
-              <div className="flex gap-2 justify-end sm:justify-start pt-4 sm:pt-0 border-t sm:border-none">
-                <Button variant="ghost" size="icon" onClick={() => handleDeleteJob(job.id)} className="rounded-xl text-muted-foreground hover:text-red-600 hover:bg-red-50 h-9 w-9 md:h-10 md:w-10">
+              
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleViewApplications(job)}
+                  className="rounded-xl md:rounded-2xl flex gap-2 h-10 md:h-12 text-sm px-6"
+                >
+                  <Users className="h-4 w-4" />
+                  View Applicants
+                </Button>
+                
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteJob(job.id)} className="rounded-xl text-muted-foreground hover:text-red-600 hover:bg-red-50 h-9 w-9 md:h-12 md:w-12">
                   <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               </div>
@@ -99,6 +139,68 @@ export default function EmployerDashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Applications Modal */}
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        title={`Applicants for ${selectedJob?.title}`}
+      >
+        <div className="py-4">
+          <p className="text-sm text-muted-foreground mb-4">Manage {applications.length} applications for this position.</p>
+          {isLoadingApps ? (
+            <div className="py-10 text-center text-muted-foreground">Loading applicants...</div>
+          ) : applications.length > 0 ? (
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+              {applications.map((app) => (
+                <div key={app.id} className="border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full overflow-hidden border bg-muted">
+                      {app.graduateProfilePicture ? (
+                        <img src={app.graduateProfilePicture} alt={app.graduateFullName} className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center text-indigo-600 font-bold text-lg">
+                          {app.graduateFullName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-base">{app.graduateFullName}</h4>
+                      <p className="text-xs text-muted-foreground line-clamp-1">{app.graduateHeadline || 'UPSA Graduate'}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Mail className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">{app.graduateEmail}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => navigate(`/graduates/${app.graduateId}?applicationId=${app.id}`)}
+                      className="text-xs h-9 rounded-xl flex gap-1.5"
+                    >
+                      View Profile
+                      <ExternalLink className="h-3 w-3" />
+                    </Button>
+                    <Badge variant={app.status === 'ACCEPTED' ? 'success' : app.status === 'REJECTED' ? 'error' : app.status === 'REVIEWED' ? 'blue' : 'secondary'} className="text-[10px] rounded-lg">
+                      {app.status === 'REVIEWED' ? 'SEEN' : app.status}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="py-10 text-center text-muted-foreground italic">
+              No applications yet for this position.
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end pt-4">
+          <Button onClick={() => setIsModalOpen(false)} variant="outline" className="rounded-xl px-8">Close</Button>
+        </div>
+      </Modal>
     </div>
   );
 }

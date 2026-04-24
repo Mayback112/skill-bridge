@@ -162,8 +162,8 @@ export default function ManualFillPage() {
               />
               <div className="space-y-1.5">
                 <label className="text-sm font-medium">Bio / About</label>
-                <textarea 
-                  className="w-full rounded-2xl border border-input bg-background px-4 py-3 min-h-[150px] focus:outline-none focus:ring-2 focus:ring-ring"
+                <textarea
+                  className="w-full rounded-2xl border-2 border-zinc-100 bg-background px-4 py-3 min-h-[150px] focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
                   placeholder="Tell us about yourself"
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}

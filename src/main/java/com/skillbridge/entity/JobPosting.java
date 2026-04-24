@@ -43,6 +43,10 @@ public class JobPosting extends BaseEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "jobPosting", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private java.util.List<JobApplication> applications = new java.util.ArrayList<>();
+
     @PrePersist
     @Override
     protected void onCreate() {

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { GraduationCap, Linkedin, Mail, Briefcase, Award, BookOpen, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { GraduationCap, Linkedin, Mail, Briefcase, Award, BookOpen, ExternalLink, CheckCircle2, Phone } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { Badge } from '@/components/common/Badge';
-import { graduateService } from '@/api';
+import { graduateService, jobService } from '@/api';
 import { toast } from 'react-hot-toast';
 import { Graduate } from '@/types/graduate.types';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,10 +11,12 @@ import { useAuth } from '@/hooks/useAuth';
 export default function GraduateProfilePage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const location = useLocation();
   const [grad, setGrad] = useState<Graduate | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const isOwnProfile = user?.id === id;
+  const isEmployer = user?.role === 'EMPLOYER';
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -25,6 +27,18 @@ export default function GraduateProfilePage() {
         if (response.data.success) {
           setGrad(response.data.data);
         }
+
+        // Handle application status update if employer views from an application
+        const queryParams = new URLSearchParams(location.search);
+        const applicationId = queryParams.get('applicationId');
+        
+        if (applicationId && isEmployer) {
+          try {
+            await jobService.updateApplicationStatus(applicationId, 'REVIEWED');
+          } catch (err) {
+            console.error('Failed to update application status:', err);
+          }
+        }
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error('Failed to load profile');
@@ -34,7 +48,7 @@ export default function GraduateProfilePage() {
     };
 
     fetchProfile();
-  }, [id]);
+  }, [id, location.search, isEmployer]);
 
   if (isLoading) {
     return (
@@ -79,11 +93,34 @@ export default function GraduateProfilePage() {
                 )}
               </div>
               <p className="text-xl text-blue-600 font-semibold mb-6">{grad.headline || 'UPSA Graduate'}</p>
+              
+              {/* Contact Details visible to employers/self */}
+              {(isEmployer || isOwnProfile) && (
+                <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-8">
+                  <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-xl text-blue-700 border border-blue-100">
+                    <Mail className="h-4 w-4" />
+                    <span className="text-sm font-bold">{grad.email}</span>
+                  </div>
+                  {grad.phoneNumber && (
+                    <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-xl text-emerald-700 border border-emerald-100">
+                      <Phone className="h-4 w-4" />
+                      <span className="text-sm font-bold">{grad.phoneNumber}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex flex-wrap justify-center md:justify-start gap-4">
                 <Button className="rounded-2xl flex gap-2" onClick={() => window.location.href = `mailto:${grad.email}`}>
                   <Mail className="h-4 w-4" />
-                  Contact
+                  Quick Email
                 </Button>
+                {grad.phoneNumber && (
+                  <Button variant="outline" className="rounded-2xl flex gap-2 border-2" onClick={() => window.location.href = `tel:${grad.phoneNumber}`}>
+                    <Phone className="h-4 w-4" />
+                    Call Now
+                  </Button>
+                )}
                 {grad.linkedInUrl && (
                   <Button variant="outline" className="rounded-2xl flex gap-2 border-2" onClick={() => window.open(grad.linkedInUrl, '_blank')}>
                     <Linkedin className="h-4 w-4 fill-current" />
@@ -91,7 +128,7 @@ export default function GraduateProfilePage() {
                   </Button>
                 )}
                 {isOwnProfile && (
-                  <Link to={`/onboarding/manual`}>
+                  <Link to={`/graduate/profile/${grad.id}`}>
                     <Button variant="outline" className="rounded-2xl border-2">Edit Profile</Button>
                   </Link>
                 )}

@@ -98,8 +98,8 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
                     </Link>
                     <div className="pt-4 mt-4 border-t">
                       {!isAuthenticated ? (
-                        <Link to="/auth/graduate/login" onClick={() => setMobileMenuOpen(false)}>
-                          <Button className="w-full rounded-2xl">Login / Register</Button>
+                        <Link to="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full rounded-2xl bg-blue-600 hover:bg-blue-700">Login / Register</Button>
                         </Link>
                       ) : (
                         <Link to={getBackPath()} onClick={() => setMobileMenuOpen(false)}>
@@ -134,12 +134,12 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
         {isOnboarding && step ? (
           <span className="text-sm font-medium text-muted-foreground">Step {step}</span>
         ) : (
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 md:gap-6">
             <Link to="/graduates" className="text-sm font-medium hover:text-blue-600 transition-colors hidden md:block">Graduates</Link>
             <Link to="/jobs" className="text-sm font-medium hover:text-blue-600 transition-colors hidden md:block">Jobs</Link>
             {!isAuthenticated ? (
-              <Link to="/auth/graduate/login" className="hidden xs:block">
-                <Button variant="outline" className="rounded-2xl">Login</Button>
+              <Link to="/auth/login">
+                <Button className="rounded-2xl px-4 md:px-6 bg-blue-600 hover:bg-blue-700 text-sm md:text-base">Login</Button>
               </Link>
             ) : (
               <Link to={getBackPath()} className="hidden xs:block">

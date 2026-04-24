@@ -54,6 +54,20 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="w-full max-w-[1600px] mx-auto p-2 md:p-0">
+      {/* Hero Image Section */}
+      <div className="relative mb-8 md:mb-12 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-xl">
+        <img
+          src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
+          alt="Analytics dashboard and platform management"
+          className="w-full h-48 md:h-64 object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+          <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
+          <p className="text-sm md:text-base text-slate-100">Monitor platform activity and manage content.</p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
         {statCards.map((s, i) => (
           <div key={i} className="bg-background border rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 shadow-sm">

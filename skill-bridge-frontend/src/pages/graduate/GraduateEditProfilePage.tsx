@@ -13,6 +13,8 @@ export default function GraduateEditProfilePage() {
   const { user, setUser } = useAuth();
 
   const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [headline, setHeadline] = useState('');
   const [bio, setBio] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
@@ -39,6 +41,8 @@ export default function GraduateEditProfilePage() {
         if (res.data.success) {
           const data = res.data.data;
           setFullName(data.fullName || '');
+          setEmail(data.email || '');
+          setPhoneNumber(data.phoneNumber || '');
           setHeadline(data.headline || '');
           setBio(data.bio || '');
           setLinkedinUrl(data.linkedInUrl || '');
@@ -84,6 +88,24 @@ export default function GraduateEditProfilePage() {
     setJobs(jobs.filter(j => j.jobTitle !== jobTitle));
   };
 
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, '');
+    
+    // Limit to 12 digits (GH country code 3 + 9 digits)
+    const limited = digits.slice(0, 12);
+    
+    if (limited.length <= 3) return limited.length > 0 ? `+${limited}` : '';
+    if (limited.length <= 5) return `+${limited.slice(0, 3)} ${limited.slice(3)}`;
+    if (limited.length <= 8) return `+${limited.slice(0, 3)} ${limited.slice(3, 5)} ${limited.slice(5)}`;
+    return `+${limited.slice(0, 3)} ${limited.slice(3, 5)} ${limited.slice(5, 8)} ${limited.slice(8)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setPhoneNumber(formatted);
+  };
+
   const handleSubmit = async () => {
     if (skills.length === 0 || jobs.length === 0) {
       toast.error('At least 1 skill and 1 job role are required');
@@ -99,6 +121,8 @@ export default function GraduateEditProfilePage() {
     try {
       const payload = {
         fullName,
+        email,
+        phoneNumber,
         headline,
         bio,
         linkedinUrl,
@@ -182,6 +206,22 @@ export default function GraduateEditProfilePage() {
                 onChange={(e) => setFullName(e.target.value)}
                 className="rounded-xl h-10 md:h-12"
               />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <Input 
+                  label="Email Address" 
+                  placeholder="john@upsa.edu.gh" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="rounded-xl h-10 md:h-12"
+                />
+                <Input 
+                  label="Phone Number" 
+                  placeholder="+233 24 618 1113" 
+                  value={phoneNumber} 
+                  onChange={handlePhoneChange}
+                  className="rounded-xl h-10 md:h-12"
+                />
+              </div>
               <Input 
                 label="Headline" 
                 placeholder="Professional title" 

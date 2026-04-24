@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Search, Briefcase, Calendar, ChevronRight } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Search, Briefcase, Calendar, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import { Badge } from '@/components/common/Badge';
 import { jobService } from '@/api';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function JobListPage() {
   const [jobs, setJobs] = useState<any[]>([]);
+  const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isApplying, setIsApplying] = useState<string | null>(null);
+  
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -18,6 +26,15 @@ export default function JobListPage() {
         const response = await jobService.getAll();
         if (response.data.success) {
           setJobs(response.data.data);
+        }
+
+        // If logged in as graduate, fetch their applications
+        if (isAuthenticated && user?.role === 'GRADUATE') {
+          const appsResponse = await jobService.getMyApplications();
+          if (appsResponse.data.success) {
+            const appliedIds = new Set<string>(appsResponse.data.data.map((app: any) => app.jobPostingId));
+            setAppliedJobIds(appliedIds);
+          }
         }
       } catch (error) {
         console.error('Error fetching jobs:', error);
@@ -28,7 +45,43 @@ export default function JobListPage() {
     };
 
     fetchJobs();
-  }, []);
+
+    // Check if we just redirected back from login to apply
+    const queryParams = new URLSearchParams(location.search);
+    const applyJobId = queryParams.get('applyJobId');
+    if (applyJobId && isAuthenticated && user?.role === 'GRADUATE') {
+      handleApply(applyJobId);
+      // Clean up the URL
+      navigate('/jobs', { replace: true });
+    }
+  }, [isAuthenticated, user?.role]);
+
+  const handleApply = async (jobId: string) => {
+    if (!isAuthenticated) {
+      toast.error('Please login to apply for this job');
+      navigate(`/auth/login?redirect=/jobs&applyJobId=${jobId}`);
+      return;
+    }
+
+    if (user?.role !== 'GRADUATE') {
+      toast.error('Only graduates can apply for jobs');
+      return;
+    }
+
+    try {
+      setIsApplying(jobId);
+      const response = await jobService.apply(jobId);
+      if (response.data.success) {
+        toast.success('Application submitted successfully!');
+        setAppliedJobIds(prev => new Set(prev).add(jobId));
+      }
+    } catch (error: any) {
+      console.error('Error applying for job:', error);
+      toast.error(error.response?.data?.message || 'Failed to submit application');
+    } finally {
+      setIsApplying(null);
+    }
+  };
 
   const filteredJobs = jobs.filter(job => 
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -81,10 +134,22 @@ export default function JobListPage() {
                       </div>
                     </div>
                   </div>
-                  <Button className="w-full lg:w-auto rounded-xl md:rounded-2xl h-12 md:h-14 px-6 md:px-10 group-hover:scale-105 transition-transform flex gap-2 text-xs md:text-sm">
-                    View & Apply
-                    <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
-                  </Button>
+                  
+                  {appliedJobIds.has(job.id) ? (
+                    <Button variant="outline" disabled className="w-full lg:w-auto rounded-xl md:rounded-2xl h-12 md:h-14 px-6 md:px-10 flex gap-2 text-xs md:text-sm border-green-600 text-green-600 opacity-100">
+                      Applied
+                      <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5" />
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => handleApply(job.id)}
+                      isLoading={isApplying === job.id}
+                      className="w-full lg:w-auto rounded-xl md:rounded-2xl h-12 md:h-14 px-6 md:px-10 group-hover:scale-105 transition-transform flex gap-2 text-xs md:text-sm"
+                    >
+                      View & Apply
+                      <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
+                    </Button>
+                  )}
                 </div>
               </div>
             ))
