@@ -109,6 +109,12 @@ public class GraduateService {
             .collect(Collectors.toList());
     }
 
+    public List<GraduateCardResponse> searchGraduatesBySkill(String skill) {
+        return graduateRepository.findBySkillName(skill).stream()
+                .map(this::toCardResponse)
+                .collect(Collectors.toList());
+    }
+
     public GraduateResponse getGraduateById(UUID id) {
         Graduate graduate = graduateRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Graduate not found"));

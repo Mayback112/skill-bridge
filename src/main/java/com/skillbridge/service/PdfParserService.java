@@ -53,7 +53,7 @@ public class PdfParserService {
         }
     }
 
-    private ParsedProfileDto extractProfile(String text) {
+    ParsedProfileDto extractProfile(String text) {
         String[] lines = text.split("\\r?\\n");
         String fullName = "";
         String headline = "";
@@ -213,31 +213,37 @@ public class PdfParserService {
         String lowerText = text.toLowerCase();
         int start = -1;
         String foundStartKey = "";
-        
+
         for (String keyword : startKeywords) {
-            int idx = lowerText.indexOf(keyword.toLowerCase());
-            if (idx != -1) {
-                start = idx + keyword.length();
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("\\b" + java.util.regex.Pattern.quote(keyword.toLowerCase()) + "\\b");
+            java.util.regex.Matcher m = p.matcher(lowerText);
+            if (m.find()) {
+                start = m.end();
                 foundStartKey = keyword;
                 break;
             }
         }
+        
         if (start == -1) return "";
 
         int end = text.length();
         for (String keyword : endKeywords) {
             if (keyword.equalsIgnoreCase(foundStartKey)) continue;
-            int idx = lowerText.indexOf(keyword.toLowerCase(), start);
-            if (idx != -1 && idx < end) {
-                end = idx;
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("\\b" + java.util.regex.Pattern.quote(keyword.toLowerCase()) + "\\b");
+            java.util.regex.Matcher m = p.matcher(lowerText);
+            if (m.find(start)) {
+                int idx = m.start();
+                if (idx < end) {
+                    end = idx;
+                }
             }
         }
+
+        String result = text.substring(start, end).trim();
         
         // Safety check: if section is too long (e.g. > 2000 chars), it probably failed to find the end
-        String result = text.substring(start, end).trim();
         if (result.length() > 2000) {
-             // Try to find ANY of the end keywords earlier if they were missed
-             return result.substring(0, 500) + "..."; // Truncate to prevent swallowing whole file
+             return result.substring(0, 500) + "...";
         }
         return result;
     }

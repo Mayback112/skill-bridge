@@ -36,6 +36,12 @@ public class GraduateController {
         return ResponseEntity.ok(ApiResponse.success("Profile status retrieved", isComplete));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<GraduateCardResponse>>> searchGraduates(@RequestParam String skill) {
+        List<GraduateCardResponse> graduates = graduateService.searchGraduatesBySkill(skill);
+        return ResponseEntity.ok(ApiResponse.success("Search results retrieved", graduates));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<GraduateResponse>> getGraduateById(@PathVariable UUID id) {
         GraduateResponse graduate = graduateService.getGraduateById(id);

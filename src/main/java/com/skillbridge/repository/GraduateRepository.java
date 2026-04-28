@@ -15,6 +15,9 @@ public interface GraduateRepository extends JpaRepository<Graduate, UUID> {
 
     boolean existsByEmail(String email);
 
+    @Query("SELECT DISTINCT g FROM Graduate g JOIN g.skills s WHERE LOWER(s.skillName) LIKE LOWER(CONCAT('%', :skill, '%')) AND g.isVerified = true")
+    java.util.List<Graduate> findBySkillName(String skill);
+
     @Query("SELECT COUNT(g) FROM Graduate g WHERE g.isVerified = true")
     long countVerified();
 }
