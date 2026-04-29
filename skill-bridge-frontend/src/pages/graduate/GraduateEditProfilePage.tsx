@@ -298,6 +298,118 @@ export default function GraduateEditProfilePage() {
 
           <section className="bg-background p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-zinc-100 shadow-lg shadow-zinc-200/50">
             <h2 className="text-xl md:text-2xl font-bold mb-6 md:mb-8 flex items-center gap-3">
+              <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-blue-600" /> Education
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="md:col-span-2">
+                <Input placeholder="Institution" id="edit-edu-inst" />
+              </div>
+              <Input placeholder="Degree" id="edit-edu-deg" />
+              <Button 
+                variant="secondary" 
+                className="rounded-xl"
+                onClick={() => {
+                  const inst = (document.getElementById('edit-edu-inst') as HTMLInputElement).value;
+                  const deg = (document.getElementById('edit-edu-deg') as HTMLInputElement).value;
+                  if (inst && deg) {
+                    setEducations([...educations, { institution: inst, degree: deg }]);
+                    (document.getElementById('edit-edu-inst') as HTMLInputElement).value = '';
+                    (document.getElementById('edit-edu-deg') as HTMLInputElement).value = '';
+                  }
+                }}
+              >
+                Add Education
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {educations.map((edu, idx) => (
+                <div key={idx} className="p-4 border rounded-xl flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold text-sm md:text-base">{edu.institution}</h4>
+                    <p className="text-xs md:text-sm text-muted-foreground">{edu.degree}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setEducations(educations.filter((_, i) => i !== idx))}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="bg-background p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-zinc-100 shadow-lg shadow-zinc-200/50">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 md:mb-8 flex items-center gap-3">
+              <Award className="h-5 w-5 md:h-6 md:w-6 text-blue-600" /> Certifications
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <Input placeholder="Certification Name" id="edit-cert-name" />
+              <Button 
+                variant="secondary" 
+                className="rounded-xl"
+                onClick={() => {
+                  const name = (document.getElementById('edit-cert-name') as HTMLInputElement).value;
+                  if (name) {
+                    setCertifications([...certifications, { name }]);
+                    (document.getElementById('edit-cert-name') as HTMLInputElement).value = '';
+                  }
+                }}
+              >
+                Add Certification
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {certifications.map((cert, idx) => (
+                <div key={idx} className="p-4 border rounded-xl flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold text-sm md:text-base">{cert.name}</h4>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setCertifications(certifications.filter((_, i) => i !== idx))}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="bg-background p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-zinc-100 shadow-lg shadow-zinc-200/50">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 md:mb-8 flex items-center gap-3">
+              <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-blue-600" /> Work Experience
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <Input placeholder="Job Title" id="edit-exp-title" />
+              <Input placeholder="Company" id="edit-exp-comp" />
+              <Button 
+                variant="secondary" 
+                className="md:col-span-2 rounded-xl"
+                onClick={() => {
+                  const title = (document.getElementById('edit-exp-title') as HTMLInputElement).value;
+                  const comp = (document.getElementById('edit-exp-comp') as HTMLInputElement).value;
+                  if (title && comp) {
+                    setWorkExperiences([...workExperiences, { jobTitle: title, company: comp }]);
+                    (document.getElementById('edit-exp-title') as HTMLInputElement).value = '';
+                    (document.getElementById('edit-exp-comp') as HTMLInputElement).value = '';
+                  }
+                }}
+              >
+                Add Experience
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {workExperiences.map((exp, idx) => (
+                <div key={idx} className="p-4 border rounded-xl flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold text-sm md:text-base">{exp.jobTitle}</h4>
+                    <p className="text-xs md:text-sm text-muted-foreground">{exp.company}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setWorkExperiences(workExperiences.filter((_, i) => i !== idx))}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="bg-background p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-zinc-100 shadow-lg shadow-zinc-200/50">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 md:mb-8 flex items-center gap-3">
               <Wrench className="h-5 w-5 md:h-6 md:w-6 text-blue-600" /> Skills
             </h2>
             <div className="flex gap-2 md:gap-3 mb-6">

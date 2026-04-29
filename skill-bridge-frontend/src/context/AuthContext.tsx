@@ -20,7 +20,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const initAuth = async () => {
-      console.log('Initializing Auth...');
       // Try sessionStorage first, then localStorage
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const userJson = sessionStorage.getItem('user') || localStorage.getItem('user');
@@ -55,7 +54,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               role: user.role,
               isLoading: false,
             });
-            console.log('Auth initialized successfully');
             return;
           }
         } catch (error) {
@@ -64,7 +62,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           logout();
         }
       } else {
-        console.log('No saved session found');
+        // No saved session found
       }
       
       setAuthState(prev => ({ ...prev, isLoading: false }));

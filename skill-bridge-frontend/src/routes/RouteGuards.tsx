@@ -27,8 +27,6 @@ export const RoleRoute: React.FC<{ children: React.ReactNode; role: string }> = 
     return <div className="flex h-screen items-center justify-center font-sans">Verifying role...</div>;
   }
 
-  console.log('RoleRoute check:', { isAuthenticated, userRole: user?.role, requiredRole: role });
-
   if (!isAuthenticated || user?.role !== role) {
     const redirectPath =
       user?.role === 'GRADUATE'
@@ -38,7 +36,6 @@ export const RoleRoute: React.FC<{ children: React.ReactNode; role: string }> = 
         : user?.role === 'ADMIN'
         ? '/admin/dashboard'
         : '/';
-    console.log('Role mismatch or unauthenticated, redirecting to:', redirectPath);
     return <Navigate to={redirectPath} replace />;
   }
 

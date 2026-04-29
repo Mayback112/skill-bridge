@@ -156,12 +156,6 @@ export default function Onboarding({ onFinish }: { onFinish: () => void }) {
   }
 
   const handleSubmit = () => {
-    console.log("Form submitted:", {
-      experience: selectedExperience,
-      useCases: selectedUseCases,
-      assets: selectedAssets,
-      networks: selectedNetworks,
-    })
     onFinish()
   }
 

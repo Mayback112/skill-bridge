@@ -147,6 +147,18 @@ public class PdfParserService {
         List<WorkExperienceRequest> workExperiences = extractWorkExperiences(text);
         List<EducationRequest> educations = extractEducation(text);
         
+        // Always ensure UPSA is in the list as default
+        boolean hasUpsa = educations.stream()
+            .anyMatch(e -> e.getInstitution().toLowerCase().contains("professional studies") || 
+                          e.getInstitution().toLowerCase().contains("upsa"));
+        
+        if (!hasUpsa) {
+            EducationRequest upsa = new EducationRequest();
+            upsa.setInstitution("University of Professional Studies, Accra");
+            upsa.setDegree("Graduate");
+            educations.add(0, upsa);
+        }
+        
         // If headline contains "Student at [University]", ensure it's in education
         if (headline.toLowerCase().contains("student at")) {
             String institution = headline.toLowerCase().replace("student at", "").trim();

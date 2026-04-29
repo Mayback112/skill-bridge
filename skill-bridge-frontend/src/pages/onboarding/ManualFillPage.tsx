@@ -47,7 +47,9 @@ export default function ManualFillPage() {
     jobTitle: w.jobTitle 
   })) || []);
 
-  const [educations, setEducations] = useState<any[]>(parsedData?.educations || []);
+  const [educations, setEducations] = useState<any[]>(parsedData?.educations || [
+    { institution: 'University of Professional Studies, Accra', degree: 'Graduate' }
+  ]);
   const [workExperiences, setWorkExperiences] = useState<any[]>(parsedData?.workExperiences || []);
   const [certifications, setCertifications] = useState<any[]>(parsedData?.certifications || []);
 
@@ -249,6 +251,33 @@ export default function ManualFillPage() {
             <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
               <GraduationCap className="h-6 w-6 text-blue-600" /> Education
             </h2>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="col-span-2">
+                <Input 
+                  placeholder="Institution (e.g. UPSA)" 
+                  id="edu-inst"
+                />
+              </div>
+              <Input 
+                placeholder="Degree (e.g. BSc Computer Science)" 
+                id="edu-degree"
+              />
+              <Button 
+                variant="secondary" 
+                className="rounded-2xl h-12"
+                onClick={() => {
+                  const inst = (document.getElementById('edu-inst') as HTMLInputElement).value;
+                  const deg = (document.getElementById('edu-degree') as HTMLInputElement).value;
+                  if (inst && deg) {
+                    setEducations([...educations, { institution: inst, degree: deg }]);
+                    (document.getElementById('edu-inst') as HTMLInputElement).value = '';
+                    (document.getElementById('edu-degree') as HTMLInputElement).value = '';
+                  }
+                }}
+              >
+                Add Education
+              </Button>
+            </div>
             <div className="space-y-4">
               {educations.map((edu, idx) => (
                 <div key={idx} className="p-4 border rounded-2xl flex justify-between items-start">
@@ -267,8 +296,73 @@ export default function ManualFillPage() {
 
           <section className="bg-background p-10 rounded-[2.5rem] border shadow-sm">
             <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
+              <Award className="h-6 w-6 text-blue-600" /> Certifications
+            </h2>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <Input 
+                placeholder="Certification Name" 
+                id="cert-name"
+              />
+              <Button 
+                variant="secondary" 
+                className="rounded-2xl h-12"
+                onClick={() => {
+                  const name = (document.getElementById('cert-name') as HTMLInputElement).value;
+                  if (name) {
+                    setCertifications([...certifications, { name }]);
+                    (document.getElementById('cert-name') as HTMLInputElement).value = '';
+                  }
+                }}
+              >
+                Add Certification
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {certifications.map((cert, idx) => (
+                <div key={idx} className="p-4 border rounded-2xl flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold">{cert.name}</h4>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setCertifications(certifications.filter((_, i) => i !== idx))}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {certifications.length === 0 && <p className="text-sm text-muted-foreground italic">No certifications added.</p>}
+            </div>
+          </section>
+
+          <section className="bg-background p-10 rounded-[2.5rem] border shadow-sm">
+            <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
               <Briefcase className="h-6 w-6 text-blue-600" /> Work Experience
             </h2>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <Input 
+                placeholder="Job Title" 
+                id="exp-title"
+              />
+              <Input 
+                placeholder="Company" 
+                id="exp-company"
+              />
+              <div className="col-span-2">
+                <Button 
+                  variant="secondary" 
+                  className="rounded-2xl h-12 w-full"
+                  onClick={() => {
+                    const title = (document.getElementById('exp-title') as HTMLInputElement).value;
+                    const company = (document.getElementById('exp-company') as HTMLInputElement).value;
+                    if (title && company) {
+                      setWorkExperiences([...workExperiences, { jobTitle: title, company }]);
+                      (document.getElementById('exp-title') as HTMLInputElement).value = '';
+                      (document.getElementById('exp-company') as HTMLInputElement).value = '';
+                    }
+                  }}
+                >
+                  Add Experience
+                </Button>
+              </div>
+            </div>
             <div className="space-y-4">
               {workExperiences.map((exp, idx) => (
                 <div key={idx} className="p-4 border rounded-2xl flex justify-between items-start">

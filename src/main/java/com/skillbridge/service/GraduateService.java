@@ -50,6 +50,14 @@ public class GraduateService {
             .isVerified(false)
             .build();
 
+        // Set default education to UPSA
+        Education upsaEdu = Education.builder()
+            .graduate(graduate)
+            .institution("University of Professional Studies, Accra")
+            .degree("Graduate")
+            .build();
+        graduate.getEducations().add(upsaEdu);
+
         graduate = graduateRepository.save(graduate);
 
         String verificationToken = jwtService.issueVerificationToken(graduate.getId(), graduate.getEmail());
@@ -174,6 +182,19 @@ public class GraduateService {
                     .build();
                 graduate.getEducations().add(edu);
             });
+
+            // Ensure UPSA is always included as default
+            boolean hasUpsa = graduate.getEducations().stream()
+                .anyMatch(e -> e.getInstitution().toLowerCase().contains("professional studies") || 
+                              e.getInstitution().toLowerCase().contains("upsa"));
+            if (!hasUpsa) {
+                Education upsa = Education.builder()
+                    .graduate(graduate)
+                    .institution("University of Professional Studies, Accra")
+                    .degree("Graduate")
+                    .build();
+                graduate.getEducations().add(upsa);
+            }
         }
 
         if (request.getWorkExperiences() != null) {
