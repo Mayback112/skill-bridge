@@ -91,7 +91,7 @@ skill-bridge-frontend/src/
 
 ### Authentication Flow
 
-1. **Graduate**: Register with `@upsa.edu.gh` email → verification link sent → email verified → login with password → JWT issued
+1. **Graduate**: Register with `@upsamail.edu.gh` email → verification link sent → email verified → login with password → JWT issued
 2. **Employer**: Google OAuth → account created automatically → JWT issued
 3. **Admin**: Platform credentials → JWT issued
 

@@ -38,7 +38,7 @@ To design and implement a web-based digital skills portal that automates profess
 - To provide a secure, role-based access system for graduates, employers, and administrators.
 
 ### 1.5 Scope of the Project
-The system is limited to UPSA graduates (validated via `@upsa.edu.gh` emails). It covers profile automation, job listings by employers, and learning resource management by administrators.
+The system is limited to UPSA graduates (validated via `@upsamail.edu.gh` emails). It covers profile automation, job listings by employers, and learning resource management by administrators.
 
 ### 1.7 Significance of the Project
 - **To Graduates:** Reduces profile setup time and provides a direct link to employers.

@@ -46,7 +46,7 @@ class GraduateServiceTest {
         graduate = Graduate.builder()
             .id(UUID.randomUUID())
             .fullName("John Doe")
-            .email("john@upsa.edu.gh")
+            .email("john@upsamail.edu.gh")
             .isVerified(true)
             .skills(new ArrayList<>())
             .build();
@@ -56,7 +56,7 @@ class GraduateServiceTest {
 
     @Test void test1_RegisterSuccess() {
         GraduateRegisterRequest req = new GraduateRegisterRequest();
-        req.setEmail("john@upsa.edu.gh");
+        req.setEmail("john@upsamail.edu.gh");
         when(emailValidator.isValidUpsaEmail(any())).thenReturn(true);
         when(graduateRepository.save(any())).thenReturn(graduate);
         assertDoesNotThrow(() -> graduateService.register(req));
@@ -71,7 +71,7 @@ class GraduateServiceTest {
 
     @Test void test3_RegisterDuplicateEmail() {
         GraduateRegisterRequest req = new GraduateRegisterRequest();
-        req.setEmail("john@upsa.edu.gh");
+        req.setEmail("john@upsamail.edu.gh");
         when(emailValidator.isValidUpsaEmail(any())).thenReturn(true);
         when(graduateRepository.existsByEmail(any())).thenReturn(true);
         assertThrows(DuplicateEmailException.class, () -> graduateService.register(req));

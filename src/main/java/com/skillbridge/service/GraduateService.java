@@ -37,7 +37,7 @@ public class GraduateService {
     @Transactional
     public void register(GraduateRegisterRequest request) {
         if (!emailValidator.isValidUpsaEmail(request.getEmail())) {
-            throw new InvalidEmailDomainException("Only UPSA email accounts (@upsa.edu.gh) are allowed");
+            throw new InvalidEmailDomainException("Only UPSA email accounts (@upsamail.edu.gh) are allowed");
         }
         if (graduateRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateEmailException("An account with this email already exists");

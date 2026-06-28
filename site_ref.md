@@ -16,7 +16,7 @@ SKILLBRIDGE GH is a web platform that connects UPSA graduates with employers by 
 
 |Role        |Auth Method                                    |Description                                                           |
 |------------|-----------------------------------------------|----------------------------------------------------------------------|
-|**Graduate**|UPSA email (`@upsa.edu.gh`) + verification link|UPSA student/graduate listing skills and seeking employment           |
+|**Graduate**|UPSA email (`@upsamail.edu.gh`) + verification link|UPSA student/graduate listing skills and seeking employment           |
 |**Employer**|Gmail (Google OAuth)                           |Company or individual posting jobs and searching for skilled graduates|
 |**Admin**   |Platform credentials                           |Monitors and moderates the platform                                   |
 
@@ -30,7 +30,7 @@ SKILLBRIDGE GH is a web platform that connects UPSA graduates with employers by 
 
 |Feature                       |Description                                                    |
 |------------------------------|---------------------------------------------------------------|
-|Register with UPSA email      |Only @upsa.edu.gh emails accepted                            |
+|Register with UPSA email      |Only @upsamail.edu.gh emails accepted                            |
 |Email verification            |Verification link sent to UPSA email                           |
 |Profile setup via LinkedIn PDF|Upload LinkedIn PDF — system auto-fills profile                |
 |Profile setup via Manual fill |Fill in all profile fields manually                            |
@@ -72,7 +72,7 @@ SKILLBRIDGE GH is a web platform that connects UPSA graduates with employers by 
 ### 🎓 Graduate
 id                  UUID
 fullName            String
-email               String (@upsa.edu.gh)
+email               String (@upsamail.edu.gh)
 passwordHash        String
 profilePicture      String (image URL)
 headline            String
@@ -179,7 +179,7 @@ Story 1 — Registration
 > *As a UPSA graduate, I want to register with my UPSA email so that only verified UPSA students can access the platform.*
 
 Flow:
-Graduate enters @upsa.edu.gh email
+Graduate enters @upsamail.edu.gh email
 → System validates domain
 → Verification link sent to email
 → Graduate clicks link
@@ -338,7 +338,7 @@ Admin adds course resource:
 
 |Rule                                             |Where Enforced    |
 |-------------------------------------------------|------------------|
-|UPSA email only (`@upsa.edu.gh`)                 |Frontend + Backend|
+|UPSA email only (`@upsamail.edu.gh`)                 |Frontend + Backend|
 |Email must be verified before proceeding         |Backend           |
 |At least one skill required on profile           |Frontend + Backend|
 |LinkedIn URL format validation                   |Frontend + Backend|
@@ -353,7 +353,7 @@ Admin adds course resource:
 
 |Concern                |Solution                                      |
 |-----------------------|----------------------------------------------|
-|UPSA email validation  |Regex check on @upsa.edu.gh                 |
+|UPSA email validation  |Regex check on @upsamail.edu.gh                 |
 |Email verification link|Spring Boot + JavaMailSender                  |
 |PDF parsing            |Apache PDFBox                                 |
 |LinkedIn URL storage   |Saved as string field on graduate profile     |

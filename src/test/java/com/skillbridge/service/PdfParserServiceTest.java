@@ -16,7 +16,7 @@ class PdfParserServiceTest {
     }
 
     @Test void test1_FullProfileParsing() {
-        String mockText = "John Doe\nSoftware Engineer\nContact\njohn@upsa.edu.gh\nExperience\nSoftware Engineer\nTech Corp\nEducation\nUPSA";
+        String mockText = "John Doe\nSoftware Engineer\nContact\njohn@upsamail.edu.gh\nExperience\nSoftware Engineer\nTech Corp\nEducation\nUPSA";
         ParsedProfileDto result = pdfParserService.extractProfile(mockText);
         assertEquals("John Doe", result.getFullName());
     }
@@ -46,7 +46,7 @@ class PdfParserServiceTest {
     }
 
     @Test void test6_EmailExtraction() {
-        String mockText = "Contact\njohn.doe@upsa.edu.gh\nExperience";
+        String mockText = "Contact\njohn.doe@upsamail.edu.gh\nExperience";
         ParsedProfileDto result = pdfParserService.extractProfile(mockText);
         assertNotNull(result);
     }

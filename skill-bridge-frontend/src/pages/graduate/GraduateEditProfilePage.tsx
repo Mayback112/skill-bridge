@@ -257,7 +257,7 @@ export default function GraduateEditProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <Input 
                   label="Email Address" 
-                  placeholder="john@upsa.edu.gh" 
+                  placeholder="john@upsamail.edu.gh" 
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)}
                   className="rounded-xl h-10 md:h-12"

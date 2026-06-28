@@ -3,14 +3,14 @@
 This document provides the detailed prompt and technical specification for generating the Flowchart Diagram for the Graduate Onboarding and Profile Automation process.
 
 ## Diagram Description
-The flowchart illustrates the logical sequence of the core graduate onboarding workflow, highlighting the @upsa.edu.gh email validation, email verification, and the LinkedIn PDF parsing automation logic.
+The flowchart illustrates the logical sequence of the core graduate onboarding workflow, highlighting the @upsamail.edu.gh email validation, email verification, and the LinkedIn PDF parsing automation logic.
 
 ## Mermaid.js Implementation
 ```mermaid
 flowchart TD
     Start([Start: Registration Page]) --> EmailInput[Enter Institutional Email]
     
-    EmailInput --> ValidEmail{Ends in <br/> @upsa.edu.gh?}
+    EmailInput --> ValidEmail{Ends in <br/> @upsamail.edu.gh?}
     ValidEmail -- No --> EmailInput
     ValidEmail -- Yes --> SendLink[Dispatch Verification Link]
     
@@ -51,7 +51,7 @@ If using a professional diagramming tool like LucidChart, Draw.io, or Visio, use
 > **Prompt:** Create a technical flowchart for the "SkillBridge GH Graduate Onboarding Process".
 > 1. **Start/End:** Use rounded capsules for "Start" and "End".
 > 2. **Decision Points:** Use diamond shapes for:
->    - "Ends in @upsa.edu.gh?"
+>    - "Ends in @upsamail.edu.gh?"
 >    - "Link Confirmed?"
 >    - "Upload LinkedIn PDF?"
 >    - "Parsing Successful?"

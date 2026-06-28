@@ -15,8 +15,8 @@ public class GraduateRegisterRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     @Pattern(
-        regexp = "^[a-zA-Z0-9._%+-]+@upsa\\.edu\\.gh$",
-        message = "Only UPSA email accounts (@upsa.edu.gh) are allowed"
+        regexp = "^[a-zA-Z0-9._%+-]+@upsamail\\.edu\\.gh$",
+        message = "Only UPSA email accounts (@upsamail.edu.gh) are allowed"
     )
     private String email;
 

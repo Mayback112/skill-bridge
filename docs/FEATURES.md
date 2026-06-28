@@ -47,7 +47,7 @@ SkillBridge is a digital skills portal connecting UPSA graduates with employers.
 **Endpoint:** `POST /api/auth/graduate/register`
 
 **Process:**
-1. Graduate enters email (must be `@upsa.edu.gh` domain)
+1. Graduate enters email (must be `@upsamail.edu.gh` domain)
 2. System validates email domain
 3. Verification link sent to email
 4. Graduate clicks link to verify account
@@ -57,7 +57,7 @@ SkillBridge is a digital skills portal connecting UPSA graduates with employers.
 ```json
 {
   "fullName": "John Doe",
-  "email": "john.doe@upsa.edu.gh",
+  "email": "john.doe@upsamail.edu.gh",
   "password": "securePassword123"
 }
 ```
@@ -83,7 +83,7 @@ SkillBridge is a digital skills portal connecting UPSA graduates with employers.
 **Request Body:**
 ```json
 {
-  "email": "john.doe@upsa.edu.gh",
+  "email": "john.doe@upsamail.edu.gh",
   "password": "securePassword123"
 }
 ```
@@ -98,7 +98,7 @@ SkillBridge is a digital skills portal connecting UPSA graduates with employers.
     "user": {
       "id": "uuid",
       "fullName": "John Doe",
-      "email": "john.doe@upsa.edu.gh",
+      "email": "john.doe@upsamail.edu.gh",
       "role": "GRADUATE"
     }
   }
@@ -189,7 +189,7 @@ Graduates can set up their profile in two ways:
     "fullName": "John Doe",
     "headline": "Software Engineer at Tech Corp",
     "bio": "Experienced developer...",
-    "email": "john.doe@upsa.edu.gh",
+    "email": "john.doe@upsamail.edu.gh",
     "skills": [
       { "skillName": "JavaScript", "proficiencyLevel": "INTERMEDIATE" }
     ],
@@ -648,7 +648,7 @@ Graduates can set up their profile in two ways:
 {
   id: UUID;
   fullName: string;
-  email: string; // @upsa.edu.gh only
+  email: string; // @upsamail.edu.gh only
   passwordHash: string;
   profilePicture?: string;
   headline?: string;
@@ -790,7 +790,7 @@ Graduates can set up their profile in two ways:
 
 | Rule | Description | Enforced By |
 |------|-------------|-------------|
-| UPSA Email Only | Graduate email must be `@upsa.edu.gh` | Frontend + Backend |
+| UPSA Email Only | Graduate email must be `@upsamail.edu.gh` | Frontend + Backend |
 | Email Verification | Email must be verified before login | Backend |
 | Minimum Skills | At least 1 skill required on profile | Frontend + Backend |
 | Minimum Jobs | At least 1 job role required on profile | Frontend + Backend |

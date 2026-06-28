@@ -10,7 +10,7 @@ import { Input } from '@/components/common/Input';
 
 const registerSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
-  email: z.string().email('Invalid email').endsWith('@upsa.edu.gh', 'Must be a UPSA email (@upsa.edu.gh)').transform(val => val.toLowerCase()),
+  email: z.string().email('Invalid email').endsWith('@upsamail.edu.gh', 'Must be a UPSA email (@upsamail.edu.gh)').transform(val => val.toLowerCase()),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
@@ -76,7 +76,7 @@ export default function GraduateRegisterPage() {
             />
             <Input
               label="UPSA Email"
-              placeholder="student@upsa.edu.gh"
+              placeholder="student@upsamail.edu.gh"
               autoLowercase
               {...register('email')}
               error={errors.email?.message}

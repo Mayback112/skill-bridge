@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class EmailValidator {
 
     private static final Pattern UPSA_EMAIL_PATTERN =
-        Pattern.compile("^[a-zA-Z0-9._%+-]+@upsa\\.edu\\.gh$", Pattern.CASE_INSENSITIVE);
+        Pattern.compile("^[a-zA-Z0-9._%+-]+@upsamail\\.edu\\.gh$", Pattern.CASE_INSENSITIVE);
 
     private static final Pattern GMAIL_PATTERN =
         Pattern.compile("^[a-zA-Z0-9._%+-]+@gmail\\.com$", Pattern.CASE_INSENSITIVE);
