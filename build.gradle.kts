@@ -1,7 +1,10 @@
+import com.github.gradle.node.npm.task.NpmTask
+
 plugins {
     java
     id("org.springframework.boot") version "3.4.1"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.github.node-gradle.node") version "7.1.0"
 }
 
 group = "com.skillbridge"
@@ -73,6 +76,12 @@ tasks.withType<Test> {
 
 val frontendDir = "$projectDir/skill-bridge-frontend"
 
+node {
+    download.set(true)
+    version.set("20.11.1")
+    nodeProjectDir.set(file(frontendDir))
+}
+
 val cleanFrontend by tasks.registering(Delete::class) {
     group = "build"
     description = "Cleans frontend build artifacts and node_modules"
@@ -85,21 +94,11 @@ tasks.clean {
     dependsOn(cleanFrontend)
 }
 
-val installFrontend by tasks.registering(Exec::class) {
-    group = "build"
-    description = "Installs frontend dependencies"
-    workingDir = file(frontendDir)
-    commandLine(if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) "npm.cmd" else "npm", "install")
-    inputs.file(file("$frontendDir/package.json"))
-    outputs.dir(file("$frontendDir/node_modules"))
-}
-
-val buildFrontend by tasks.registering(Exec::class) {
+val buildFrontend by tasks.registering(NpmTask::class) {
     group = "build"
     description = "Builds the frontend"
-    dependsOn(installFrontend)
-    workingDir = file(frontendDir)
-    commandLine(if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) "npm.cmd" else "npm", "run", "build")
+    dependsOn(tasks.named("npmInstall"))
+    args.set(listOf("run", "build"))
     inputs.dir(file("$frontendDir/src"))
     inputs.dir(file("$frontendDir/public"))
     inputs.file(file("$frontendDir/package.json"))
