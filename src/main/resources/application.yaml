@@ -34,17 +34,9 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-  mail:
-    host: ${MAIL_HOST:smtp.mailersend.net}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:MS_kMXyzY@test-86org8e6xr0gew13.mlsender.net}
-    password: ${MAIL_PASSWORD:mssp.4NwgXq0.vywj2lpen91g7oqz.Zjcqxmw}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+mailersend:
+  api:
+    token: ${MAILERSEND_API_TOKEN}
 
   security:
     oauth2:

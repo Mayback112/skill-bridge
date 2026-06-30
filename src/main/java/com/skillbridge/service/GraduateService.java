@@ -9,6 +9,7 @@ import com.skillbridge.repository.*;
 import com.skillbridge.util.EmailValidator;
 import com.skillbridge.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GraduateService {
 
     private final GraduateRepository graduateRepository;
@@ -61,7 +63,11 @@ public class GraduateService {
         graduate = graduateRepository.save(graduate);
 
         String verificationToken = jwtService.issueVerificationToken(graduate.getId(), graduate.getEmail());
-        emailService.sendVerificationEmail(graduate.getEmail(), graduate.getFullName(), verificationToken);
+        try {
+            emailService.sendVerificationEmail(graduate.getEmail(), graduate.getFullName(), verificationToken);
+        } catch (Exception e) {
+            log.warn("Failed to send verification email to {}: {}", graduate.getEmail(), e.getMessage());
+        }
     }
 
     @Transactional
