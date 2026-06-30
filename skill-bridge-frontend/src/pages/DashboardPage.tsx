@@ -1,5 +1,5 @@
-import { DesignaliCreative } from "@/components/creative"
+import { SkillBridgeDashboard } from "@/components/creative"
 
 export default function DashboardPage() {
-  return <DesignaliCreative />
+  return <SkillBridgeDashboard />
 }

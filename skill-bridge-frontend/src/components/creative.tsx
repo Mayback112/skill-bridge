@@ -429,7 +429,7 @@ const sidebarItems = [
   },
 ]
 
-export function DesignaliCreative() {
+export function SkillBridgeDashboard() {
   const [progress, setProgress] = useState(0)
   const [notifications, setNotifications] = useState(5)
   const [activeTab, setActiveTab] = useState("home")
@@ -485,8 +485,8 @@ export function DesignaliCreative() {
                 <Wand2 className="size-5" />
               </div>
               <div>
-                <h2 className="font-semibold">Designali</h2>
-                <p className="text-xs text-muted-foreground">Creative Suite</p>
+                <h2 className="font-semibold">SkillBridge</h2>
+                <p className="text-xs text-muted-foreground">Skills Portal</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
@@ -591,8 +591,8 @@ export function DesignaliCreative() {
                 <Wand2 className="size-5" />
               </div>
               <div>
-                <h2 className="font-semibold">Designali</h2>
-                <p className="text-xs text-muted-foreground">Creative Suite</p>
+                <h2 className="font-semibold">SkillBridge</h2>
+                <p className="text-xs text-muted-foreground">Skills Portal</p>
               </div>
             </div>
           </div>
@@ -690,7 +690,7 @@ export function DesignaliCreative() {
             <PanelLeft className="h-5 w-5" />
           </Button>
           <div className="flex flex-1 items-center justify-between">
-            <h1 className="text-xl font-semibold">Designali Creative</h1>
+             <h1 className="text-xl font-semibold">SkillBridge</h1>
             <div className="flex items-center gap-3">
               <TooltipProvider>
                 <Tooltip>
@@ -789,10 +789,9 @@ export function DesignaliCreative() {
                       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                         <div className="space-y-4">
                           <Badge className="bg-white/20 text-white hover:bg-white/30 rounded-xl">Premium</Badge>
-                          <h2 className="text-3xl font-bold">Welcome to DesignAli Creative Suite</h2>
+                          <h2 className="text-3xl font-bold">Welcome to SkillBridge</h2>
                           <p className="max-w-[600px] text-white/80">
-                            Unleash your creativity with our comprehensive suite of professional design tools and
-                            resources.
+                            Unleash your potential with our comprehensive digital skills portal connecting graduates with top employers.
                           </p>
                           <div className="flex flex-wrap gap-3">
                             <Button className="rounded-2xl bg-white text-indigo-700 hover:bg-white/90">
