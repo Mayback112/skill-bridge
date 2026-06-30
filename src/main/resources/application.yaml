@@ -35,10 +35,10 @@ spring:
       max-request-size: 10MB
 
   mail:
-    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
+    host: ${MAIL_HOST:smtp.mailersend.net}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:9dae64b9e64a22}
-    password: ${MAIL_PASSWORD:59736d23d1ed47}
+    username: ${MAIL_USERNAME:MS_kMXyzY@test-86org8e6xr0gew13.mlsender.net}
+    password: ${MAIL_PASSWORD:mssp.4NwgXq0.vywj2lpen91g7oqz.Zjcqxmw}
     properties:
       mail:
         smtp:
