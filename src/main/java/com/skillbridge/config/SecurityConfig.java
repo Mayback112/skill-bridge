@@ -52,7 +52,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/admin/login").permitAll()
                 // OAuth2 flow
                 .requestMatchers("/api/auth/employer/google").permitAll()
-                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                .requestMatchers("/oauth2/authorization/**").permitAll()
+                .requestMatchers("/login/oauth2/code/**").permitAll()
                 // Public browse endpoints
                 .requestMatchers(HttpMethod.GET, "/api/graduates").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/graduates/**").permitAll()

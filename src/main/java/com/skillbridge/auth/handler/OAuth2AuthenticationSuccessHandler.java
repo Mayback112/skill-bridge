@@ -36,7 +36,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         AuthResponse authResponse = employerService.findOrCreateEmployer(googleId, email, name, picture);
 
-        String redirectUrl = frontendUrl + "/oauth2/callback?token=" + authResponse.getToken();
+        String redirectUrl;
+        if (authResponse.getUser() != null && authResponse.getUser().getRole() == com.skillbridge.enums.Role.EMPLOYER) {
+            redirectUrl = frontendUrl + "/oauth2/callback?token=" + authResponse.getToken();
+        } else {
+            redirectUrl = frontendUrl + "/";
+        }
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }

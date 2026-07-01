@@ -26,6 +26,8 @@ export const authService = {
     axiosInstance.get('/auth/me'),
 
   googleLogin: () => {
-    window.location.href = `${axiosInstance.defaults.baseURL}/auth/employer/google`;
+    const baseURL = axiosInstance.defaults.baseURL || '/api';
+    const backendUrl = baseURL.endsWith('/api') ? baseURL.slice(0, -4) : baseURL;
+    window.location.href = `${backendUrl}/oauth2/authorization/google`;
   }
 };
